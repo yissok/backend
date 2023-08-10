@@ -3,28 +3,37 @@ plugins {
 	id 'org.springframework.boot' version '3.1.2'
 	id 'io.spring.dependency-management' version '1.1.2'
 	id 'com.palantir.docker' version '0.35.0'
+	id "com.palantir.docker-run" version "0.35.0"
 }
 apply plugin: 'io.spring.dependency-management'
 
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '19'
+
+targetCompatibility = '19'
+def dockerOwner = 'andreamedia'
 
 java {
 	sourceCompatibility = '19'
 }
 
-jar {
-	manifest {
-		attributes(
-				'Main-Class': 'com.example.demo.DemoApplication'
-		)
-	}
-}
+//jar {
+//	manifest {
+//		attributes(
+//				'Main-Class': 'com.example.demo.DemoApplication'
+//		)
+//	}
+//}
 springBoot {
 	buildInfo()
 }
-
+tasks.named("bootJar") {
+	manifest {
+		attributes 'Start-Class': 'com.example.demo.DemoApplication'
+	}
+}
 
 configurations {
 	compileOnly {
@@ -36,13 +45,35 @@ repositories {
 	mavenCentral()
 }
 
+// takes templatized Dockerfile, places into buildDir
+task prepareDockerfileTemplate(type: Copy) {
+	from "src/main/resources/docker"
+	include "Dockerfile"
+	filter { it.replaceAll('<%=name%>', project.name) }
+	filter { it.replaceAll('<%=version%>', project.version) }
+	into "$buildDir"
+}
+// add explicit dependencies, otherwise we get warning at console
+dockerPrepare.dependsOn bootJar
+bootJar.dependsOn prepareDockerfileTemplate
+//bootJarMainClassName.dependsOn prepareDockerfileTemplate
+//bootRunMainClassName.dependsOn prepareDockerfileTemplate
+
+// https://plugins.gradle.org/plugin/com.palantir.docker
 docker {
 	name "backend_jsb"
-	dockerfile file('src/docker/Dockerfile')
-	copySpec.from(jar).rename(".*","app.jar")
-	buildArgs(['JAR_FILE': "app.jar"])
+	files "$buildDir/libs/${project.name}-${project.version}.jar"
+	dockerfile file("$buildDir/Dockerfile")
 }
 
+// https://plugins.gradle.org/plugin/com.palantir.docker-run
+dockerRun {
+	name "${project.name}"
+	image "${dockerOwner}/${project.name}:${project.version}"
+	ports '8080:8080','8081:8081'
+	clean true
+	daemonize false
+}
 ext {
 	set('springCloudVersion', "2022.0.4")
 }
