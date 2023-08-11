@@ -68,11 +68,12 @@ docker {
 
 // https://plugins.gradle.org/plugin/com.palantir.docker-run
 dockerRun {
-	name "${project.name}"
-	image "${dockerOwner}/${project.name}:${project.version}"
+	name "backend_jsb"
+	image "backend_jsb"
 	ports '8080:8080','8081:8081'
 	clean true
 	daemonize false
+	arguments '--hostname=localhost'
 }
 ext {
 	set('springCloudVersion', "2022.0.4")
