@@ -16,6 +16,7 @@ public class TestController {
     @GetMapping("/")
     @ResponseBody
     public String getTest() throws Exception {
+        logger.info("called");
         return "aaaaaaahi";
     }
 
