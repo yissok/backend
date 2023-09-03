@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,7 @@ public class TestController {
     @ResponseBody
     public String getTest() throws Exception {
         logger.info("called");
-        return "aaaaaaahi";
+        return "12-08-2023";
     }
 
 }
