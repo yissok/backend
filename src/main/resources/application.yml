@@ -6,6 +6,7 @@ spring.output.ansi.enabled: ALWAYS
 spring:
   data:
     mongodb:
-      host: localhost
-      port: 27017
-      database: testSpring
+#      host: localhost
+#      port: 27017
+#      database: testSpring
+      uri: mongodb+srv://mongouser:${mongodb.password}@cluster0.xecpsrk.mongodb.net/testSpring
