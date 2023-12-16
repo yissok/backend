@@ -4,5 +4,5 @@ spring:
 #      host: localhost
 #      port: 27017
 #      database: testSpring
-      uri: mongodb+srv://mongouser:${mongodb.password}@cluster0.xecpsrk.mongodb.net/testSpring
+      uri: mongodb+srv://mongouser:${MONGODB_PASSWORD}@cluster0.xecpsrk.mongodb.net/testSpring
   output.ansi.enabled: ALWAYS
