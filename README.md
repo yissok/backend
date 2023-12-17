@@ -5,9 +5,12 @@ Simple Java backend
 
 ## TODO
 
-- get db secret from aws
-- convert sam to cf
-- insert
+
+- store secret deploy from local with cli and get secret with https://stackoverflow.com/questions/62521811/how-to-pass-parameter-as-a-file-in-aws-cloudformation-deploy in cloudformation
+- package jar and upload with cli
+- github actions packages jar and uploads to s3
+- use githubaction to deploy cf
+- add below to cf to make api internal only
     ```json
     {
         "Version": "2012-10-17",
