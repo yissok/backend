@@ -16,7 +16,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: 'adopt-hotspot'
           java-version: '21'
 
       - name: Setup Gradle
