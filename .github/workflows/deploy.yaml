@@ -20,10 +20,8 @@ jobs:
           java-version: '21'
           server-id: github
 
-      - name: Set up Gradle
-        uses: actions/setup-gradle@v2
-        with:
-          gradle-version: '8.5'
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
 
       - name: Build and deploy Spring Boot application to S3
         run: |
