@@ -17,7 +17,7 @@ public class BookController {
     @PostMapping("/add")
     public String saveBook(@RequestBody Book book){
         repo.save(book);
-        return "added "+book.getId();
+        return "added ";
     }
 
     @GetMapping("/all")
