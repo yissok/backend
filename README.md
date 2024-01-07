@@ -19,21 +19,9 @@ Simple Java backend
 - deploy cf
   - ~~use cli~~
   - use githubaction
-- add below to cf to make api internal only
-    ```json
-    {
-        "Version": "2012-10-17",
-        "Statement": [
-            {
-                "Effect": "Allow",
-                "Principal": {
-                    "AWS": [
-                        "arn:aws:iam::555690433748:user/mario"
-                    ]
-                },
-                "Action": "execute-api:Invoke",
-                "Resource": "*"
-            }
-        ]
-    }
-    ```
+- make api internal only
+  - ~~add policy~~
+  - verify with internal ec2 curl that it actually is accessible vpc
+  - also test out if this works "Condition": { "StringNotEqualsIfExists": { "aws:username": "mario" } }
+
+aws s3 cp src/main/resources/cf/mario.yaml s3://andreaciao/cf/

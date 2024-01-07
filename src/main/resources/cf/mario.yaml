@@ -11,8 +11,8 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       Code:
-        S3Bucket: aws-sam-cli-managed-default-samclisourcebucket-yyecaqf0jaid
-        S3Key: mario/9fd3b98c2e2bd24405fec30db1462e20
+        S3Bucket: andreaciao
+        S3Key: my-project/deployments/20231225164445/mario-executable.jar
       Handler: com.example.demo.StreamLambdaHandler::handleRequest
       MemorySize: 2048
       Role:
@@ -93,6 +93,32 @@ Resources:
   ServerlessRestApi:
     Type: AWS::ApiGateway::RestApi
     Properties:
+      EndpointConfiguration:
+        Types:
+          - PRIVATE
+      Policy: !Sub |
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Deny",
+              "Principal": "*",
+              "Action": "execute-api:Invoke",
+              "Resource": "arn:aws:execute-api:us-east-1:${AWS::AccountId}:*/*/*/*",
+              "Condition": {
+                "StringNotEquals": {
+                  "aws:sourceVpc": "vpc-0dd834bc43b7b73cc"
+                }
+              }
+            },
+            {
+              "Effect": "Allow",
+              "Principal": "*",
+              "Action": "execute-api:Invoke",
+              "Resource": "arn:aws:execute-api:us-east-1:${AWS::AccountId}:*/*/*/*"
+            }
+          ]
+        }
       Body:
         info:
           version: '1.0'
