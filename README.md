@@ -21,7 +21,13 @@ Simple Java backend
   - use githubaction
 - make api internal only
   - ~~add policy~~
-  - verify with internal ec2 curl that it actually is accessible vpc
+  - node app
+    - verify with internal ec2 curl that it actually is accessible vpc
+      - ~~create template node project~~
+      - add custom proxy endpoint that performs http request as provided (not secure but just to test internal gateway)
+      - destroy stack once verified
+    - block requests without cookie
+    - email signup
   - also test out if this works "Condition": { "StringNotEqualsIfExists": { "aws:username": "mario" } }
 
 aws s3 cp src/main/resources/cf/mario.yaml s3://andreaciao/cf/
