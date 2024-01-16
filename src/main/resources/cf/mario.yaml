@@ -104,7 +104,7 @@ Resources:
               "Effect": "Deny",
               "Principal": "*",
               "Action": "execute-api:Invoke",
-              "Resource": "arn:aws:execute-api:us-east-1:${AWS::AccountId}:*/*/*/*",
+              "Resource": "arn:aws:execute-api:us-east-1:${AWS::AccountId}:/*/*/*",
               "Condition": {
                 "StringNotEquals": {
                   "aws:sourceVpc": "vpc-0dd834bc43b7b73cc"
@@ -115,7 +115,7 @@ Resources:
               "Effect": "Allow",
               "Principal": "*",
               "Action": "execute-api:Invoke",
-              "Resource": "arn:aws:execute-api:us-east-1:${AWS::AccountId}:*/*/*/*"
+              "Resource": "arn:aws:execute-api:us-east-1:${AWS::AccountId}:/*/*/*"
             }
           ]
         }
