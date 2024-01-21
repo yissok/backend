@@ -2,6 +2,7 @@
 
 Simple Java backend
 
+./gradlew clean buildZip
 
 ## TODO
 
@@ -24,9 +25,11 @@ NEXT EPISODE:
 - store aws secret
   - ~~use secret to upload jar~~
   - use secret with CF https://stackoverflow.com/questions/62521811/how-to-pass-parameter-as-a-file-in-aws-cloudformation-deploy
-- create eni and include it in CF
-  - https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-private-apis.html
-  - The security group you choose must be set to allow TCP Port 443 inbound HTTPS traffic from either an IP range in your VPC or another security group in your VPC.
+- VPC stuff
+  - create vpc, subnet and sec gr
+  - also create igw and connect it to above vpc in rt table
+  - fix cf to make api gateway live in newly created vpc
+  - ok add to cloudformation vpc endpoint in that subnet and sec gr and also add that endpoint to the route table and add vpce endpoint to api gateway settings and allow inbound 443 in sec group
 - deploy cf
   - ~~use cli~~
   - use githubaction
@@ -43,3 +46,32 @@ NEXT EPISODE:
   - also test out if this works "Condition": { "StringNotEqualsIfExists": { "aws:username": "mario" } }
 
 aws s3 cp src/main/resources/cf/mario.yaml s3://andreaciao/cf/
+
+
+
+
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "execute-api:Invoke",
+      "Resource": "arn:aws:execute-api:us-east-1:555690433748:xll10dbqqj/*/*/*",
+      "Condition": {
+        "StringNotEquals": {
+          "aws:sourceVpc": "vpc-064ded8e17459e560"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "execute-api:Invoke",
+      "Resource": "arn:aws:execute-api:us-east-1:555690433748:xll10dbqqj/*/*/*"
+    }
+  ]
+}
+```
