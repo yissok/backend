@@ -1,5 +1,11 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
+Outputs:
+  ApiGatewayId:
+    Value:
+      Ref: ServerlessRestApi
+    Export:
+      Name: MyApiGatewayId  # Choose a unique export name
 Resources:
   MyVPC:
     Type: 'AWS::EC2::VPC'
@@ -72,21 +78,22 @@ Resources:
       SubnetIds:
         - !Ref MySubnet  # Ensure the VPC endpoint is in MySubnet
       VpcEndpointType: Interface
+      Tags:
+        - Key: 'Name'
+          Value: 'ApiGatewayVPCEndpoint'
 
-
-
-#  MyEC2Instance:
-#    Type: 'AWS::EC2::Instance'
-#    Properties:
-#      ImageId: 'ami-0cb6fec6f40971379'  # Specify your AMI ID
-#      InstanceType: 't4g.nano'  # Set instance type to t4g.nano
-#      KeyName: 'luigi'  # Specify your key pair name
-#      NetworkInterfaces:
-#        - AssociatePublicIpAddress: true
-#          DeviceIndex: 0
-#          SubnetId: !Ref MySubnet
-#          GroupSet:
-#            - !Ref MySecurityGroup
+  MyEC2Instance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: 'ami-0cb6fec6f40971379'  # Specify your AMI ID
+      InstanceType: 't4g.nano'  # Set instance type to t4g.nano
+      KeyName: 'luigi'  # Specify your key pair name
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          SubnetId: !Ref MySubnet
+          GroupSet:
+            - !Ref MySecurityGroup
 
   MyRouteTableAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
@@ -94,14 +101,15 @@ Resources:
       SubnetId: !Ref MySubnet
       RouteTableId: !Ref MyRouteTable
 
-#  MyApiGatewayVpcLink:
-#    Type: 'AWS::ApiGatewayV2::VpcLink'
-#    Properties:
-#      Name: 'MyApiGatewayVpcLink'
-#      SubnetIds:
-#        - !Ref MySubnet
-#      SecurityGroupIds:
-#        - !GetAtt MySecurityGroup.GroupId
+  MyApiGatewayVpcLink:
+    Type: 'AWS::ApiGatewayV2::VpcLink'
+    DependsOn: ServerlessRestApi
+    Properties:
+      Name: 'MyApiGatewayVpcLink'
+      SubnetIds:
+        - !Ref MySubnet
+      SecurityGroupIds:
+        - !GetAtt MySecurityGroup.GroupId
 
   ServerlessRestApiDeploymentANDREA:
     Type: AWS::ApiGateway::Deployment
@@ -206,6 +214,8 @@ Resources:
       EndpointConfiguration:
         Types:
           - PRIVATE
+        VpcEndpointIds:
+          - !Ref ApiGatewayVPCEndpoint
       Policy: !Sub |
         {
           "Version": "2012-10-17",
@@ -214,7 +224,7 @@ Resources:
               "Effect": "Deny",
               "Principal": "*",
               "Action": "execute-api:Invoke",
-              "Resource": "arn:aws:execute-api:us-east-1:${AWS::AccountId}:/*/*/*",
+              "Resource": "arn:aws:execute-api:us-east-1:${AWS::AccountId}:${MyApiGatewayId}/*/*/*",
               "Condition": {
                 "StringNotEquals": {
                   "aws:sourceVpc": "${MyVPC}"
@@ -225,7 +235,7 @@ Resources:
               "Effect": "Allow",
               "Principal": "*",
               "Action": "execute-api:Invoke",
-              "Resource": "arn:aws:execute-api:us-east-1:${AWS::AccountId}:/*/*/*"
+              "Resource": "arn:aws:execute-api:us-east-1:${AWS::AccountId}:${MyApiGatewayId}/*/*/*"
             }
           ]
         }
@@ -244,3 +254,4 @@ Resources:
                   Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BackendApiFunctionAliasproduction}/invocations
               responses: {}
         swagger: '2.0'
+

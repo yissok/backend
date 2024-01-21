@@ -7,12 +7,14 @@ Simple Java backend
 ## TODO
 
 NEXT EPISODE: 
-- read through Creating a private API in Amazon API Gateway article again or find some tutorial
-- rebuild stack
+- ~~read through Creating a private API in Amazon API Gateway article again or find some tutorial~~
+- ~~rebuild stack~~
 - make sure node app starts automatically 
-- then do curl 'https://3g7ximgle3.execute-api.us-east-1.amazonaws.com/Prod/test//' from the ec2 host,
-- try to get it to not give you {"Message":"User: anonymous is not authorized to perform: execute-api:Invoke on resource: arn:aws:execute-api:us-east-1:********3748:3g7ximgle3/Prod/GET/test//"}
-- or https://repost.aws/knowledge-center/api-gateway-private-cross-account-vpce
+- ~~then do curl 'https://3g7ximgle3.execute-api.us-east-1.amazonaws.com/Prod/test//' from the ec2 host,~~
+- ~~try to get it to not give you {"Message":"User: anonymous is not authorized to perform: execute-api:Invoke on resource: arn:aws:execute-api:us-east-1:********3748:3g7ximgle3/Prod/GET/test//"}~~
+- ~~or https://repost.aws/knowledge-center/api-gateway-private-cross-account-vpce~~
+- you got it working manually but cf template is still missing something, getting [ec2-user@ip-10-0-0-27 ~]$ curl https://qgay44hpqj.execute-api.us-east-1.amazonaws.com/Prod/ curl: (6) Could not resolve host: qgay44hpqj.execute-api.us-east-1.amazonaws.com from instance
+- add depends on to set order in cf
 
 ...
 
