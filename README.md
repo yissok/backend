@@ -61,10 +61,10 @@ aws s3 cp src/main/resources/cf/mario.yaml s3://andreaciao/cf/
       "Effect": "Deny",
       "Principal": "*",
       "Action": "execute-api:Invoke",
-      "Resource": "arn:aws:execute-api:us-east-1:555690433748:xll10dbqqj/*/*/*",
+      "Resource": "arn:aws:execute-api:us-east-1:555690433748:k8jbqqvx4b/*/*/*",
       "Condition": {
         "StringNotEquals": {
-          "aws:sourceVpc": "vpc-064ded8e17459e560"
+          "aws:sourceVpc": "vpc-09d9d349e5f383138"
         }
       }
     },
@@ -72,7 +72,7 @@ aws s3 cp src/main/resources/cf/mario.yaml s3://andreaciao/cf/
       "Effect": "Allow",
       "Principal": "*",
       "Action": "execute-api:Invoke",
-      "Resource": "arn:aws:execute-api:us-east-1:555690433748:xll10dbqqj/*/*/*"
+      "Resource": "arn:aws:execute-api:us-east-1:555690433748:k8jbqqvx4b/*/*/*"
     }
   ]
 }

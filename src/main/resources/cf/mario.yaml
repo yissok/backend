@@ -1,11 +1,5 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Outputs:
-  ApiGatewayId:
-    Value:
-      Ref: ServerlessRestApi
-    Export:
-      Name: MyApiGatewayId  # Choose a unique export name
 Resources:
   MyVPC:
     Type: 'AWS::EC2::VPC'
@@ -68,19 +62,17 @@ Resources:
       DestinationCidrBlock: '0.0.0.0/0'
       GatewayId: !Ref MyInternetGateway
 
-  ApiGatewayVPCEndpoint:
-    Type: 'AWS::EC2::VPCEndpoint'
-    Properties:
-      VpcId: !Ref MyVPC
-      ServiceName: !Sub 'com.amazonaws.${AWS::Region}.execute-api'
-      SecurityGroupIds:
-        - !GetAtt MySecurityGroup.GroupId
-      SubnetIds:
-        - !Ref MySubnet  # Ensure the VPC endpoint is in MySubnet
-      VpcEndpointType: Interface
-      Tags:
-        - Key: 'Name'
-          Value: 'ApiGatewayVPCEndpoint'
+#  ApiGatewayVPCEndpoint:
+#    Type: 'AWS::EC2::VPCEndpoint'
+#    Properties:
+#      VpcId: !Ref MyVPC
+#      ServiceName: !Sub 'com.amazonaws.${AWS::Region}.execute-api'
+#      SecurityGroupIds:
+#        - !GetAtt MySecurityGroup.GroupId
+#      SubnetIds:
+#        - !Ref MySubnet  # Ensure the VPC endpoint is in MySubnet
+#      VpcEndpointType: Interface
+  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #   IF WE CREATE THIS ONE AT THE SAME TIME IT WONT WORK
 
   MyEC2Instance:
     Type: 'AWS::EC2::Instance'
@@ -136,7 +128,7 @@ Resources:
         Variables:
           POWERTOOLS_SERVICE_NAME: backend
           JAVA_TOOL_OPTIONS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
-          MONGODB_PASSWORD: a
+          MONGODB_PASSWORD: dummy-pass
       Architectures:
         - x86_64
       SnapStart:
@@ -214,8 +206,6 @@ Resources:
       EndpointConfiguration:
         Types:
           - PRIVATE
-        VpcEndpointIds:
-          - !Ref ApiGatewayVPCEndpoint
       Policy: !Sub |
         {
           "Version": "2012-10-17",
@@ -224,7 +214,7 @@ Resources:
               "Effect": "Deny",
               "Principal": "*",
               "Action": "execute-api:Invoke",
-              "Resource": "arn:aws:execute-api:us-east-1:${AWS::AccountId}:${MyApiGatewayId}/*/*/*",
+              "Resource": "execute-api:/*/*/*",
               "Condition": {
                 "StringNotEquals": {
                   "aws:sourceVpc": "${MyVPC}"
@@ -235,7 +225,7 @@ Resources:
               "Effect": "Allow",
               "Principal": "*",
               "Action": "execute-api:Invoke",
-              "Resource": "arn:aws:execute-api:us-east-1:${AWS::AccountId}:${MyApiGatewayId}/*/*/*"
+              "Resource": "execute-api:/*/*/*"
             }
           ]
         }
