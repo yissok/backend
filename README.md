@@ -7,14 +7,13 @@ Simple Java backend
 ## TODO
 
 NEXT EPISODE: 
-- ~~read through Creating a private API in Amazon API Gateway article again or find some tutorial~~
-- ~~rebuild stack~~
-- make sure node app starts automatically 
-- ~~then do curl 'https://3g7ximgle3.execute-api.us-east-1.amazonaws.com/Prod/test//' from the ec2 host,~~
-- ~~try to get it to not give you {"Message":"User: anonymous is not authorized to perform: execute-api:Invoke on resource: arn:aws:execute-api:us-east-1:********3748:3g7ximgle3/Prod/GET/test//"}~~
-- ~~or https://repost.aws/knowledge-center/api-gateway-private-cross-account-vpce~~
-- you got it working manually but cf template is still missing something, getting [ec2-user@ip-10-0-0-27 ~]$ curl https://qgay44hpqj.execute-api.us-east-1.amazonaws.com/Prod/ curl: (6) Could not resolve host: qgay44hpqj.execute-api.us-east-1.amazonaws.com from instance
-- add depends on to set order in cf
+- create stack cli
+- continue execution 10 min after create stack
+- java create pr to update s3 location of zip in cloudformation
+- create update cf step on separate branch
+- merge create and update steps i.e. if it does not exist, create, if not, update
+- 
+
 
 ...
 
@@ -52,7 +51,33 @@ aws s3 cp src/main/resources/cf/mario.yaml s3://andreaciao/cf/
 
 
 
+TODO ARCHIVE
 
+- ~~read through Creating a private API in Amazon API Gateway article again or find some tutorial~~
+- ~~rebuild stack~~
+- make sure node app starts automatically
+- ~~then do curl 'https://3g7ximgle3.execute-api.us-east-1.amazonaws.com/Prod/test//' from the ec2 host,~~
+- ~~try to get it to not give you {"Message":"User: anonymous is not authorized to perform: execute-api:Invoke on resource: arn:aws:execute-api:us-east-1:********3748:3g7ximgle3/Prod/GET/test//"}~~
+- ~~or https://repost.aws/knowledge-center/api-gateway-private-cross-account-vpce~~
+- ~~you got it working manually but cf template is still missing something, getting [ec2-user@ip-10-0-0-27 ~]$ curl https://qgay44hpqj.execute-api.us-east-1.amazonaws.com/Prod/ curl: (6) Could not resolve host: qgay44hpqj.execute-api.us-east-1.amazonaws.com from instance~~
+- ~~add depends on to set order in cf~~
+- it was vpc endpoint... so just do it via cli in gh actions after cf is created
+  - aws ec2 describe-vpcs --filters "Name=tag:Name,Values=MyVPC" --query "Vpcs[0].VpcId" --output text
+  - aws ec2 describe-security-groups  --filters "Name=tag:Name,Values=MySecurityGroup" --query "SecurityGroups[0].GroupId" --output text
+  - aws ec2 describe-subnets --filters "Name=tag:Name,Values=MySubnet" --query "Subnets[0].SubnetId" --output text
+  - aws ec2 create-vpc-endpoint \
+    --vpc-id vpc-0c4fa9bea900a8ca0 \
+    --service-name com.amazonaws.us-east-1.execute-api \
+    --subnet-ids subnet-042479f7b4b85aa66 \
+    --security-group-ids sg-0c11430eeb2fdf23d \
+    --vpc-endpoint-type Interface \
+    --tag-specifications 'ResourceType=vpc-endpoint,Tags=[{Key=Name,Value=MyVpce}]'
+  - aws apigateway get-rest-apis --query "items[?name=='YourApiGatewayName'].id" --output text
+  - vpceId=$(aws ec2 describe-vpc-endpoints --query "VpcEndpoints[?Tags[?Key=='Name' && Value=='MyVpce']].VpcEndpointId" --output text)
+  - aws apigateway update-rest-api \
+    --rest-api-id mc5jjk7dl3 \
+    --patch-operations "op='add',path='/endpointConfiguration/vpcEndpointIds',value='vpce-02dfcc4e2ec43b8f6'" \
+    --region us-east-1
 ```json
 {
   "Version": "2012-10-17",
