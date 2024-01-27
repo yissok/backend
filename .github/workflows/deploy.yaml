@@ -66,7 +66,8 @@ jobs:
           aws cloudformation create-stack \
             --stack-name "$STACK_NAME" \
             --template-url "$HTTPS_TEMPLATE_URL" \
-            --region "$REGION"
+            --region "$REGION" \
+            --capabilities CAPABILITY_IAM
           while true; do
             status=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query 'Stacks[0].StackStatus' --output text)
             case $status in
