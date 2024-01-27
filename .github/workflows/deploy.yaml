@@ -59,9 +59,9 @@ jobs:
         run: |
           S3_BUCKET=andreaciao
           S3_OBJECT_KEY="my-project/templates/latest"
-          TEMP_ZIP_PATH=s3://$S3_BUCKET/$S3_OBJECT_KEY/$STACK_NAME
+          TEMP_ZIP_PATH=s3://$S3_BUCKET/$S3_OBJECT_KEY/$STACK_NAME.yaml
           aws s3 cp src/main/resources/cf/mario.yaml "$TEMP_ZIP_PATH"
-          HTTPS_TEMPLATE_URL="https://$BUCKET.s3.amazonaws.com/$OBJECT_KEY"
+          HTTPS_TEMPLATE_URL="https://$S3_BUCKET.s3.amazonaws.com/$S3_OBJECT_KEY/$STACK_NAME.yaml"
           echo $HTTPS_TEMPLATE_URL
           aws cloudformation create-stack \
             --stack-name "$STACK_NAME" \
