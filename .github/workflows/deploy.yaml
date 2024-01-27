@@ -42,8 +42,9 @@ jobs:
           S3_BUCKET=andreaciao
           S3_OBJECT_KEY="my-project/deployments/$(date +'%Y%m%d%H%M%S')"
           executable_jar=$(ls build/libs/*-SNAPSHOT.jar)
-          echo "JAR_PATH=s3://$S3_BUCKET/$S3_OBJECT_KEY/$SPRING_BOOT_APP_NAME-executable.jar" >> "$GITHUB_OUTPUT"
-          aws s3 cp "$executable_jar" "$JAR_PATH"
+          TEMP_JAR_PATH=s3://$S3_BUCKET/$S3_OBJECT_KEY/$SPRING_BOOT_APP_NAME-executable.jar
+          echo "JAR_PATH=$TEMP_JAR_PATH" >> "$GITHUB_OUTPUT"
+          aws s3 cp "$executable_jar" "$TEMP_JAR_PATH"
           echo "Spring Boot application executable JAR uploaded to S3 successfully."
 
       - name: Deploy Mario CloudFormation
