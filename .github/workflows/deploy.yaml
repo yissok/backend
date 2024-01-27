@@ -49,6 +49,8 @@ jobs:
 
       - name: Deploy Mario CloudFormation
         env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           JAR_PATH: ${{ steps.jar-builder.outputs.JAR_PATH }}
           STACK_NAME: mario-cf
           REGION: us-east-1
