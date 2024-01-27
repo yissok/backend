@@ -6,12 +6,12 @@ on:
       - java
       - create-cf
       - update-cf
-      - everything
+      - main
 
 jobs:
   deploy-java:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/java'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -26,54 +26,73 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Build and deploy Spring Boot application to S3
-        run: |
-          which java
-          java -version          
-          ./gradlew clean build
-          
-          export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-          export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-          export AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
-          
-          S3_BUCKET=andreaciao
-          
-          S3_OBJECT_KEY="my-project/deployments/$(date +'%Y%m%d%H%M%S')"
-          
-          executable_jar=$(ls build/libs/*-SNAPSHOT.jar)
-          
-          aws s3 cp "$executable_jar" "s3://$S3_BUCKET/$S3_OBJECT_KEY/$SPRING_BOOT_APP_NAME-executable.jar"
-          
-          echo "Spring Boot application executable JAR uploaded to S3 successfully."
+        id: jar-builder
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-east-1
           SPRING_BOOT_APP_NAME: mario
+        run: |
+          which java
+          java -version          
+          ./gradlew clean build
+          export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+          export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+          export AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
+          S3_BUCKET=andreaciao
+          S3_OBJECT_KEY="my-project/deployments/$(date +'%Y%m%d%H%M%S')"
+          executable_jar=$(ls build/libs/*-SNAPSHOT.jar)
+          echo "JAR_PATH=s3://$S3_BUCKET/$S3_OBJECT_KEY/$SPRING_BOOT_APP_NAME-executable.jar" >> "$GITHUB_OUTPUT"
+          aws s3 cp "$executable_jar" "$JAR_PATH"
+          echo "Spring Boot application executable JAR uploaded to S3 successfully."
+
+      - name: Build and deploy Spring Boot application to S3
+        env:
+          JAR_PATH: ${{ steps.jar-builder.outputs.JAR_PATH }}
+          STACK_NAME: mario-cf
+          REGION: us-east-1
+        run: |
+          STACK_NAME="YOUR_STACK_NAME"
+          aws cloudformation create-stack \
+            --stack-name "$STACK_NAME" \
+            --template-url "$JAR_PATH" \
+            --region "$REGION"
+          while true; do
+            status=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query 'Stacks[0].StackStatus' --output text)
+            case $status in
+              CREATE_COMPLETE|UPDATE_COMPLETE|DELETE_COMPLETE)
+                echo "Stack $STACK_NAME has completed."
+                break
+                ;;
+              *)
+                echo "Stack $STACK_NAME is still in progress or has encountered an error. Current status: $status"
+                sleep 10
+                ;;
+            esac
+          done
+          # we need to finish up the stack setup with cli commands since creating it directly through cloudformation proved to not work
+          # https://stackoverflow.com/questions/64000387/i-cant-access-an-aws-api-gateway-from-inside-a-vpc
+          # this is a common problem with private apis and couldnt find a solution yet
+          VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=MyVPC" --query "Vpcs[0].VpcId" --output text)
+          SEC_ID=$(aws ec2 describe-security-groups  --filters "Name=tag:Name,Values=MySecurityGroup" --query "SecurityGroups[0].GroupId" --output text)
+          SUB_ID=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=MySubnet" --query "Subnets[0].SubnetId" --output text)
+          aws ec2 create-vpc-endpoint \
+            --vpc-id "$VPC_ID" \
+            --service-name com.amazonaws.us-east-1.execute-api \
+            --subnet-ids "$SUB_ID" \
+            --security-group-ids "$SEC_ID" \
+            --vpc-endpoint-type Interface \
+            --tag-specifications 'ResourceType=vpc-endpoint,Tags=[{Key=Name,Value=MyVpce}]'
+          AGW_ID=$(aws apigateway get-rest-apis --query "items[?name=='$STACK_NAME'].id" --output text)
+          VPCE_ID=$(aws ec2 describe-vpc-endpoints --query "VpcEndpoints[?Tags[?Key=='Name' && Value=='MyVpce']].VpcEndpointId" --output text)
+          aws apigateway update-rest-api \
+            --rest-api-id "$AGW_ID" \
+            --patch-operations "op='add',path='/endpointConfiguration/vpcEndpointIds',value='$VPCE_ID'" \
+            --region us-east-1
   deploy-create-cf:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/create-cf'
     steps:
       - name: Create stack from scratch
         run: |
-# we need to finish up the stack setup with cli commands since creating it directly through cloudformation proved to not work
-# https://stackoverflow.com/questions/64000387/i-cant-access-an-aws-api-gateway-from-inside-a-vpc
-# this is a common problem with private apis and couldnt find a solution yet
-          aws ec2 describe-vpcs --filters "Name=tag:Name,Values=MyVPC" --query "Vpcs[0].VpcId" --output text
-          aws ec2 describe-security-groups  --filters "Name=tag:Name,Values=MySecurityGroup" --query "SecurityGroups[0].GroupId" --output text
-          aws ec2 describe-subnets --filters "Name=tag:Name,Values=MySubnet" --query "Subnets[0].SubnetId" --output text
-          aws ec2 create-vpc-endpoint \
-          --vpc-id vpc-0c4fa9bea900a8ca0 \
-          --service-name com.amazonaws.us-east-1.execute-api \
-          --subnet-ids subnet-042479f7b4b85aa66 \
-          --security-group-ids sg-0c11430eeb2fdf23d \
-          --vpc-endpoint-type Interface \
-          --tag-specifications 'ResourceType=vpc-endpoint,Tags=[{Key=Name,Value=MyVpce}]'
-          aws apigateway get-rest-apis --query "items[?name=='YourApiGatewayName'].id" --output text
-          vpceId=$(aws ec2 describe-vpc-endpoints --query "VpcEndpoints[?Tags[?Key=='Name' && Value=='MyVpce']].VpcEndpointId" --output text)
-          aws apigateway update-rest-api \
-          --rest-api-id mc5jjk7dl3 \
-          --patch-operations "op='add',path='/endpointConfiguration/vpcEndpointIds',value='vpce-02dfcc4e2ec43b8f6'" \
-          --region us-east-1
-
-
-
+          echo "haro everynyan"
