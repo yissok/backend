@@ -35,34 +35,34 @@ jobs:
         run: |
           which java
           java -version          
-          ./gradlew clean build --exclude-task compileTestJava
+          ./gradlew clean buildZip
           export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
           export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
           export AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
           S3_BUCKET=andreaciao
-          S3_OBJECT_KEY="my-project/deployments/$(date +'%Y%m%d%H%M%S')"
-          executable_jar=$(ls build/libs/*-SNAPSHOT.jar)
-          TEMP_JAR_PATH=s3://$S3_BUCKET/$S3_OBJECT_KEY/$SPRING_BOOT_APP_NAME-executable.jar
-          echo "JAR_PATH=$TEMP_JAR_PATH" >> "$GITHUB_OUTPUT"
-          aws s3 cp "$executable_jar" "$TEMP_JAR_PATH"
+          S3_OBJECT_KEY="my-project/deployments/latest"
+          executable_zip=$(ls build/distributions/mario-executable.zip)
+          TEMP_ZIP_PATH=s3://$S3_BUCKET/$S3_OBJECT_KEY/mario-executable.zip
+          echo "ZIP_PATH=$TEMP_ZIP_PATH" >> "$GITHUB_OUTPUT"
+          aws s3 cp "$executable_zip" "$TEMP_ZIP_PATH"
           echo "Spring Boot application executable JAR uploaded to S3 successfully."
 
       - name: Deploy Mario CloudFormation
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          JAR_PATH: ${{ steps.jar-builder.outputs.JAR_PATH }}
+          ZIP_PATH: ${{ steps.jar-builder.outputs.ZIP_PATH }}
           STACK_NAME: mario-cf
           REGION: us-east-1
         run: |
-          URL_WITHOUT_S3="${JAR_PATH#s3://}"
+          URL_WITHOUT_S3="${ZIP_PATH#s3://}"
           BUCKET="${URL_WITHOUT_S3%%/*}"
           OBJECT_KEY="${URL_WITHOUT_S3#*/}"
-          HTTPS_JAR_URL="https://$BUCKET.s3.amazonaws.com/$OBJECT_KEY"
-          echo $HTTPS_JAR_URL
+          HTTPS_ZIP_URL="https://$BUCKET.s3.amazonaws.com/$OBJECT_KEY"
+          echo $HTTPS_ZIP_URL
           aws cloudformation create-stack \
             --stack-name "$STACK_NAME" \
-            --template-url "$HTTPS_JAR_URL" \
+            --template-url file://src/main/resources/cf/mario.yaml \
             --region "$REGION"
           while true; do
             status=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query 'Stacks[0].StackStatus' --output text)
