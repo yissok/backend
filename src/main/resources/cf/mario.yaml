@@ -118,7 +118,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: andreaciao
-        S3Key: my-project/deployments/latest/mario-executable.zip
+        S3Key: my-project/deployments/latest/demo-0.0.1-SNAPSHOT.zip
       Handler: com.example.demo.StreamLambdaHandler::handleRequest
       MemorySize: 2048
       Role:
