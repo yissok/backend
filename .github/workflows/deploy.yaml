@@ -62,7 +62,7 @@ jobs:
           echo $HTTPS_JAR_URL
           aws cloudformation create-stack \
             --stack-name "$STACK_NAME" \
-            --template-url "$OBJECT_KEY" \
+            --template-url "$HTTPS_JAR_URL" \
             --region "$REGION"
           while true; do
             status=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query 'Stacks[0].StackStatus' --output text)
