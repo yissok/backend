@@ -55,7 +55,6 @@ jobs:
           STACK_NAME: mario-cf
           REGION: us-east-1
         run: |
-          STACK_NAME="YOUR_STACK_NAME"
           aws cloudformation create-stack \
             --stack-name "$STACK_NAME" \
             --template-url "$JAR_PATH" \
