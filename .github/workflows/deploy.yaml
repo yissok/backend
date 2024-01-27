@@ -55,9 +55,14 @@ jobs:
           STACK_NAME: mario-cf
           REGION: us-east-1
         run: |
+          URL_WITHOUT_S3="${JAR_PATH#s3://}"
+          BUCKET="${URL_WITHOUT_S3%%/*}"
+          OBJECT_KEY="${URL_WITHOUT_S3#*/}"
+          HTTPS_JAR_URL="https://$BUCKET.s3.amazonaws.com/$OBJECT_KEY"
+          echo $HTTPS_JAR_URL
           aws cloudformation create-stack \
             --stack-name "$STACK_NAME" \
-            --template-url "$JAR_PATH" \
+            --template-url "$OBJECT_KEY" \
             --region "$REGION"
           while true; do
             status=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query 'Stacks[0].StackStatus' --output text)
