@@ -53,18 +53,18 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          ZIP_PATH: ${{ steps.jar-builder.outputs.ZIP_PATH }}
           STACK_NAME: mario-cf
           REGION: us-east-1
         run: |
-          URL_WITHOUT_S3="${ZIP_PATH#s3://}"
-          BUCKET="${URL_WITHOUT_S3%%/*}"
-          OBJECT_KEY="${URL_WITHOUT_S3#*/}"
-          HTTPS_ZIP_URL="https://$BUCKET.s3.amazonaws.com/$OBJECT_KEY"
-          echo $HTTPS_ZIP_URL
+          S3_BUCKET=andreaciao
+          S3_OBJECT_KEY="my-project/templates/latest"
+          TEMP_ZIP_PATH=s3://$S3_BUCKET/$S3_OBJECT_KEY/$STACK_NAME
+          aws s3 cp src/main/resources/cf/mario.yaml "$TEMP_ZIP_PATH"
+          HTTPS_TEMPLATE_URL="https://$BUCKET.s3.amazonaws.com/$OBJECT_KEY"
+          echo $HTTPS_TEMPLATE_URL
           aws cloudformation create-stack \
             --stack-name "$STACK_NAME" \
-            --template-url file://src/main/resources/cf/mario.yaml \
+            --template-url "$HTTPS_TEMPLATE_URL" \
             --region "$REGION"
           while true; do
             status=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query 'Stacks[0].StackStatus' --output text)
