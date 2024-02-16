@@ -1,5 +1,23 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  FRONTEND_ADMIN_SENDER_EMAIL:
+    Description: a
+    Type: String
+  FRONTEND_APP_PASSWORD:
+    Description: a
+    Type: String
+  FRONTEND_ANDREA_ADMIN_EMAIL:
+    Description: a
+    Type: String
+  FRONTEND_ENCRYPTION_KEY:
+    Description: a
+    Type: String
+  FRONTEND_JWS_SECRET:
+    Description: a
+    Type: String
+
 Resources:
   MyVPC:
     Type: 'AWS::EC2::VPC'
@@ -83,6 +101,24 @@ Resources:
       ImageId: 'ami-0cb6fec6f40971379'  # Specify your AMI ID
       InstanceType: 't4g.nano'  # Set instance type to t4g.nano
       KeyName: 'luigi'  # Specify your key pair name
+      UserData:
+        Fn::Base64: !Sub
+          - |
+            #!/bin/bash 
+            set -e
+            curl -sL https://deb.nodesource.com/setup_16.x | bash -
+            sudo apt install nodejs
+            node -v
+            npm -v
+            git clone https://github.com/yissok/node-bastion.git
+            cd node-bastion
+            npm install 
+            npm start #implicit here is that node will use all FRONTEND_* secret variables
+          - FRONTEND_ADMIN_SENDER_EMAIL: !Ref FRONTEND_ADMIN_SENDER_EMAIL
+          - FRONTEND_APP_PASSWORD: !Ref FRONTEND_APP_PASSWORD
+          - FRONTEND_ANDREA_ADMIN_EMAIL: !Ref FRONTEND_ANDREA_ADMIN_EMAIL
+          - FRONTEND_ENCRYPTION_KEY: !Ref FRONTEND_ENCRYPTION_KEY
+          - FRONTEND_JWS_SECRET: !Ref FRONTEND_JWS_SECRET
       NetworkInterfaces:
         - AssociatePublicIpAddress: true
           DeviceIndex: 0
