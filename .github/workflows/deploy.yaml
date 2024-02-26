@@ -68,7 +68,7 @@ jobs:
             --template-url "$HTTPS_TEMPLATE_URL" \
             --region "$REGION" \
             --capabilities CAPABILITY_IAM \
-            --parameters  ParameterKey=FRONTEND_JWS_SECRET,ParameterValue=${{ secrets.FRONTEND_JWS_SECRET }} ParameterKey=FRONTEND_ENCRYPTION_KEY,ParameterValue=${{ secrets.FRONTEND_ENCRYPTION_KEY }} ParameterKey=FRONTEND_APP_PASSWORD,ParameterValue=${{ secrets.FRONTEND_APP_PASSWORD }} ParameterKey=FRONTEND_ANDREA_ADMIN_EMAIL,ParameterValue=${{ secrets.FRONTEND_ANDREA_ADMIN_EMAIL }} ParameterKey=FRONTEND_ADMIN_SENDER_EMAIL,ParameterValue=${{ secrets.FRONTEND_ADMIN_SENDER_EMAIL }} ParameterKey=DB_MONGOUSER_PASSWORD,ParameterValue=${{ secrets.DB_MONGOUSER_PASSWORD }} ParameterKey=DB_USERNAME,ParameterValue=${{ secrets.DB_USERNAME }} 
+            --parameters  ParameterKey=FRONTENDJWSSECRET,ParameterValue=${{ secrets.FRONTEND_JWS_SECRET }} ParameterKey=FRONTENDENCRYPTIONKEY,ParameterValue=${{ secrets.FRONTEND_ENCRYPTION_KEY }} ParameterKey=FRONTENDAPPPASSWORD,ParameterValue=${{ secrets.FRONTEND_APP_PASSWORD }} ParameterKey=FRONTENDANDREAADMINEMAIL,ParameterValue=${{ secrets.FRONTEND_ANDREA_ADMIN_EMAIL }} ParameterKey=FRONTENDADMINSENDEREMAIL,ParameterValue=${{ secrets.FRONTEND_ADMIN_SENDER_EMAIL }} ParameterKey=DBMONGOUSERPASSWORD,ParameterValue=${{ secrets.DB_MONGOUSER_PASSWORD }} ParameterKey=DBUSERNAME,ParameterValue=${{ secrets.DB_USERNAME }} 
           while true; do
             status=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query 'Stacks[0].StackStatus' --output text)
             case $status in
