@@ -68,7 +68,7 @@ jobs:
             --template-url "$HTTPS_TEMPLATE_URL" \
             --region "$REGION" \
             --capabilities CAPABILITY_IAM \
-            --parameters ParameterKey=FRONTENDJWSSECRET,ParameterValue=${{ secrets.FRONTENDJWSSECRET }} ParameterKey=FRONTENDENCRYPTIONKEY,ParameterValue=${{ secrets.FRONTENDENCRYPTIONKEY }} ParameterKey=FRONTENDAPPPASSWORD,ParameterValue=${{ secrets.FRONTENDAPPPASSWORD }} ParameterKey=FRONTENDANDREAADMINEMAIL,ParameterValue=${{ secrets.FRONTENDANDREAADMINEMAIL }} arameterKey=FRONTENDADMINSENDEREMAIL,ParameterValue=${{ secrets.FRONTENDADMINSENDEREMAIL }} ParameterKey=DBMONGOUSERPASSWORD,ParameterValue=${{ secrets.DBMONGOUSERPASSWORD }} ParameterKey=DBUSERNAME,ParameterValue=${{ secrets.DBUSERNAME }} 
+            --parameters ParameterKey=FRONTENDJWSSECRET,ParameterValue=${{ secrets.FRONTENDJWSSECRET }} ParameterKey=FRONTENDENCRYPTIONKEY,ParameterValue=${{ secrets.FRONTENDENCRYPTIONKEY }} ParameterKey=FRONTENDAPPPASSWORD,ParameterValue=${{ secrets.FRONTENDAPPPASSWORD }} ParameterKey=FRONTENDANDREAADMINEMAIL,ParameterValue=${{ secrets.FRONTENDANDREAADMINEMAIL }} ParameterKey=FRONTENDADMINSENDEREMAIL,ParameterValue=${{ secrets.FRONTENDADMINSENDEREMAIL }} ParameterKey=DBMONGOUSERPASSWORD,ParameterValue=${{ secrets.DBMONGOUSERPASSWORD }} ParameterKey=DBUSERNAME,ParameterValue=${{ secrets.DBUSERNAME }} 
           while true; do
             status=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query 'Stacks[0].StackStatus' --output text)
             case $status in
