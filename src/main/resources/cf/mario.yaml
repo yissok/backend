@@ -108,8 +108,7 @@ Resources:
       InstanceType: 't4g.nano'  # Set instance type to t4g.nano
       KeyName: 'luigi'  # Specify your key pair name
       UserData:
-        Fn::Base64:
-          !Sub
+        Fn::Base64: !Sub
             - |
               #!/bin/bash
               echo "haro everynyan"
@@ -122,11 +121,13 @@ Resources:
               cd node-bastion
               npm install 
               npm start #implicit here is that node will use all FRONTEND_* secret variables
-            - FRONTEND_ADMIN_SENDER_EMAIL: !Ref FRONTEND_ADMIN_SENDER_EMAIL
-            - FRONTEND_APP_PASSWORD: !Ref FRONTEND_APP_PASSWORD
-            - FRONTEND_ANDREA_ADMIN_EMAIL: !Ref FRONTEND_ANDREA_ADMIN_EMAIL
-            - FRONTEND_ENCRYPTION_KEY: !Ref FRONTEND_ENCRYPTION_KEY
-            - FRONTEND_JWS_SECRET: !Ref FRONTEND_JWS_SECRET
+            - FRONTENDJWSSECRET: !Ref FRONTENDJWSSECRET
+              FRONTENDENCRYPTIONKEY: !Ref FRONTENDENCRYPTIONKEY
+              FRONTENDAPPPASSWORD: !Ref FRONTENDAPPPASSWORD
+              FRONTENDANDREAADMINEMAIL: !Ref FRONTENDANDREAADMINEMAIL
+              FRONTENDADMINSENDEREMAIL: !Ref FRONTENDADMINSENDEREMAIL
+              DBMONGOUSERPASSWORD: !Ref DBMONGOUSERPASSWORD
+              DBUSERNAME: !Ref DBUSERNAME
       NetworkInterfaces:
         - AssociatePublicIpAddress: true
           DeviceIndex: 0
