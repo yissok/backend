@@ -112,14 +112,21 @@ Resources:
             - |
               #!/bin/bash
               echo "haro everynyan"
+              sudo su
               set -e
-              curl -sL https://deb.nodesource.com/setup_16.x | bash -
-              sudo apt install nodejs
+              sudo yum install https://rpm.nodesource.com/pub_21.x/nodistro/repo/nodesource-release-nodistro-1.noarch.rpm -y
+              curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
+              . ~/.nvm/nvm.sh
+              nvm install node
               node -v
               npm -v
-              git clone https://github.com/yissok/node-bastion.git
+              sudo yum install git -y
+              sudo git clone https://github.com/yissok/node-bastion.git
               cd node-bastion
-              npm install 
+              sudo chown -R $(whoami) ~/.npm
+              sudo mkdir -m 777 node_modules
+              sudo chmod -R 777 .
+              npm install
               npm start #implicit here is that node will use all FRONTEND_* secret variables
             - FRONTENDJWSSECRET: !Ref FRONTENDJWSSECRET
               FRONTENDENCRYPTIONKEY: !Ref FRONTENDENCRYPTIONKEY

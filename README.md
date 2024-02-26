@@ -12,7 +12,7 @@ NEXT EPISODE:
 - java create pr to update s3 location of zip in cloudformation
 - create update cf step on separate branch
 - merge create and update steps i.e. if it does not exist, create, if not, update
-- 
+- TEARDOWN - delete vpc endpoint > network interface > vpc
 
 
 ...
