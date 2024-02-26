@@ -2,19 +2,25 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Parameters:
-  FRONTEND_ADMIN_SENDER_EMAIL:
+  FRONTENDJWSSECRET:
     Description: a
     Type: String
-  FRONTEND_APP_PASSWORD:
+  FRONTENDENCRYPTIONKEY:
     Description: a
     Type: String
-  FRONTEND_ANDREA_ADMIN_EMAIL:
+  FRONTENDAPPPASSWORD:
     Description: a
     Type: String
-  FRONTEND_ENCRYPTION_KEY:
+  FRONTENDANDREAADMINEMAIL:
     Description: a
     Type: String
-  FRONTEND_JWS_SECRET:
+  FRONTENDADMINSENDEREMAIL:
+    Description: a
+    Type: String
+  DBMONGOUSERPASSWORD:
+    Description: a
+    Type: String
+  DBUSERNAME:
     Description: a
     Type: String
 
