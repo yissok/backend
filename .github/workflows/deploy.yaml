@@ -69,38 +69,38 @@ jobs:
             --region "$REGION" \
             --capabilities CAPABILITY_IAM \
             --parameters ParameterKey=FRONTENDJWSSECRET,ParameterValue=${{ secrets.FRONTENDJWSSECRET }} ParameterKey=FRONTENDENCRYPTIONKEY,ParameterValue=${{ secrets.FRONTENDENCRYPTIONKEY }} ParameterKey=FRONTENDAPPPASSWORD,ParameterValue=${{ secrets.FRONTENDAPPPASSWORD }} ParameterKey=FRONTENDANDREAADMINEMAIL,ParameterValue=${{ secrets.FRONTENDANDREAADMINEMAIL }} ParameterKey=FRONTENDADMINSENDEREMAIL,ParameterValue=${{ secrets.FRONTENDADMINSENDEREMAIL }} ParameterKey=DBMONGOUSERPASSWORD,ParameterValue=${{ secrets.DBMONGOUSERPASSWORD }} ParameterKey=DBUSERNAME,ParameterValue=${{ secrets.DBUSERNAME }} 
-          while true; do
-            status=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query 'Stacks[0].StackStatus' --output text)
-            case $status in
-              CREATE_COMPLETE|UPDATE_COMPLETE|DELETE_COMPLETE)
-                echo "Stack $STACK_NAME has completed."
-                break
-                ;;
-              *)
-                echo "Stack $STACK_NAME is still in progress or has encountered an error. Current status: $status"
-                sleep 10
-                ;;
-            esac
-          done
-          # we need to finish up the stack setup with cli commands since creating it directly through cloudformation proved to not work
-          # https://stackoverflow.com/questions/64000387/i-cant-access-an-aws-api-gateway-from-inside-a-vpc
-          # this is a common problem with private apis and couldnt find a solution yet
-          VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=MyVPC" --query "Vpcs[0].VpcId" --output text)
-          SEC_ID=$(aws ec2 describe-security-groups  --filters "Name=tag:Name,Values=MySecurityGroup" --query "SecurityGroups[0].GroupId" --output text)
-          SUB_ID=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=MySubnet" --query "Subnets[0].SubnetId" --output text)
-          aws ec2 create-vpc-endpoint \
-            --vpc-id "$VPC_ID" \
-            --service-name com.amazonaws.us-east-1.execute-api \
-            --subnet-ids "$SUB_ID" \
-            --security-group-ids "$SEC_ID" \
-            --vpc-endpoint-type Interface \
-            --tag-specifications 'ResourceType=vpc-endpoint,Tags=[{Key=Name,Value=MyVpce}]'
-          AGW_ID=$(aws apigateway get-rest-apis --query "items[?name=='$STACK_NAME'].id" --output text)
-          VPCE_ID=$(aws ec2 describe-vpc-endpoints --query "VpcEndpoints[?Tags[?Key=='Name' && Value=='MyVpce']].VpcEndpointId" --output text)
-          aws apigateway update-rest-api \
-            --rest-api-id "$AGW_ID" \
-            --patch-operations "op='add',path='/endpointConfiguration/vpcEndpointIds',value='$VPCE_ID'" \
-            --region us-east-1
+#          while true; do
+#            status=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query 'Stacks[0].StackStatus' --output text)
+#            case $status in
+#              CREATE_COMPLETE|UPDATE_COMPLETE|DELETE_COMPLETE)
+#                echo "Stack $STACK_NAME has completed."
+#                break
+#                ;;
+#              *)
+#                echo "Stack $STACK_NAME is still in progress or has encountered an error. Current status: $status"
+#                sleep 10
+#                ;;
+#            esac
+#          done
+#          # we need to finish up the stack setup with cli commands since creating it directly through cloudformation proved to not work
+#          # https://stackoverflow.com/questions/64000387/i-cant-access-an-aws-api-gateway-from-inside-a-vpc
+#          # this is a common problem with private apis and couldnt find a solution yet
+#          VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=MyVPC" --query "Vpcs[0].VpcId" --output text)
+#          SEC_ID=$(aws ec2 describe-security-groups  --filters "Name=tag:Name,Values=MySecurityGroup" --query "SecurityGroups[0].GroupId" --output text)
+#          SUB_ID=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=MySubnet" --query "Subnets[0].SubnetId" --output text)
+#          aws ec2 create-vpc-endpoint \
+#            --vpc-id "$VPC_ID" \
+#            --service-name com.amazonaws.us-east-1.execute-api \
+#            --subnet-ids "$SUB_ID" \
+#            --security-group-ids "$SEC_ID" \
+#            --vpc-endpoint-type Interface \
+#            --tag-specifications 'ResourceType=vpc-endpoint,Tags=[{Key=Name,Value=MyVpce}]'
+#          AGW_ID=$(aws apigateway get-rest-apis --query "items[?name=='$STACK_NAME'].id" --output text)
+#          VPCE_ID=$(aws ec2 describe-vpc-endpoints --query "VpcEndpoints[?Tags[?Key=='Name' && Value=='MyVpce']].VpcEndpointId" --output text)
+#          aws apigateway update-rest-api \
+#            --rest-api-id "$AGW_ID" \
+#            --patch-operations "op='add',path='/endpointConfiguration/vpcEndpointIds',value='$VPCE_ID'" \
+#            --region us-east-1
   deploy-create-cf:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/create-cf'
