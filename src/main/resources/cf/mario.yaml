@@ -127,15 +127,13 @@ Resources:
               DBUSERNAME=${PRMDBUSERNAME}
               echo ${DBUSERNAME}
               sudo su --login
+              cd ~
               set -e
               sudo yum install https://rpm.nodesource.com/pub_21.x/nodistro/repo/nodesource-release-nodistro-1.noarch.rpm -y
-              sleep 5
               curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
-              sleep 5
               export NVM_DIR="$HOME/.nvm"
               [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
               source ~/.bash_profile
-              sleep 5
               nvm install node
               node -v
               npm -v
@@ -146,13 +144,13 @@ Resources:
               sudo mkdir -m 777 node_modules
               sudo chmod -R 777 .
               npm install
-              export $FRONTENDJWSSECRET
-              export $FRONTENDENCRYPTIONKEY
-              export $FRONTENDAPPPASSWORD
-              export $FRONTENDANDREAADMINEMAIL
-              export $FRONTENDADMINSENDEREMAIL
-              export $DBMONGOUSERPASSWORD
-              export $DBUSERNAME
+              export FRONTENDJWSSECRET
+              export FRONTENDENCRYPTIONKEY
+              export FRONTENDAPPPASSWORD
+              export FRONTENDANDREAADMINEMAIL
+              export FRONTENDADMINSENDEREMAIL
+              export DBMONGOUSERPASSWORD
+              export DBUSERNAME
               npm start # implicit here is that node will use all FRONTEND_* secret variables
             - FRONTENDJWSSECRET: !Ref PRMFRONTENDJWSSECRET
               FRONTENDENCRYPTIONKEY: !Ref PRMFRONTENDENCRYPTIONKEY
