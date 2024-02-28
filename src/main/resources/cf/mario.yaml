@@ -141,7 +141,7 @@ Resources:
               export DBMONGOUSERPASSWORD
               DBUSERNAME="$DBUSERNAME"
               export DBUSERNAME
-              npm start #implicit here is that node will use all FRONTEND_* secret variables
+              npm start # implicit here is that node will use all FRONTEND_* secret variables
             - FRONTENDJWSSECRET: !Ref FRONTENDJWSSECRET
               FRONTENDENCRYPTIONKEY: !Ref FRONTENDENCRYPTIONKEY
               FRONTENDAPPPASSWORD: !Ref FRONTENDAPPPASSWORD
