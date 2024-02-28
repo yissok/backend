@@ -127,14 +127,21 @@ Resources:
               sudo mkdir -m 777 node_modules
               sudo chmod -R 777 .
               npm install
-              npm start #implicit here is that node will use all FRONTEND_* secret variables
-            - FRONTENDJWSSECRET: !Ref FRONTENDJWSSECRET
-              FRONTENDENCRYPTIONKEY: !Ref FRONTENDENCRYPTIONKEY
-              FRONTENDAPPPASSWORD: !Ref FRONTENDAPPPASSWORD
-              FRONTENDANDREAADMINEMAIL: !Ref FRONTENDANDREAADMINEMAIL
-              FRONTENDADMINSENDEREMAIL: !Ref FRONTENDADMINSENDEREMAIL
-              DBMONGOUSERPASSWORD: !Ref DBMONGOUSERPASSWORD
-              DBUSERNAME: !Ref DBUSERNAME
+              FRONTENDJWSSECRET="{{resolve:Parameters.FRONTENDJWSSECRET}}"
+              export FRONTENDJWSSECRET
+              FRONTENDENCRYPTIONKEY="{{resolve:Parameters.FRONTENDENCRYPTIONKEY}}"
+              export FRONTENDENCRYPTIONKEY
+              FRONTENDAPPPASSWORD="{{resolve:Parameters.FRONTENDAPPPASSWORD}}"
+              export FRONTENDAPPPASSWORD
+              FRONTENDANDREAADMINEMAIL="{{resolve:Parameters.FRONTENDANDREAADMINEMAIL}}"
+              export FRONTENDANDREAADMINEMAIL
+              FRONTENDADMINSENDEREMAIL="{{resolve:Parameters.FRONTENDADMINSENDEREMAIL}}"
+              export FRONTENDADMINSENDEREMAIL
+              DBMONGOUSERPASSWORD="{{resolve:Parameters.DBMONGOUSERPASSWORD}}"
+              export DBMONGOUSERPASSWORD
+              DBUSERNAME="{{resolve:Parameters.DBUSERNAME}}"
+              export DBUSERNAME
+              npm start #implicit here is that node will use all FRONTEND_* secret variables 
       NetworkInterfaces:
         - AssociatePublicIpAddress: true
           DeviceIndex: 0
