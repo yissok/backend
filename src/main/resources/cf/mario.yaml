@@ -3,24 +3,31 @@ AWSTemplateFormatVersion: '2010-09-09'
 
 Parameters:
   PRMFRONTENDJWSSECRET:
+    NoEcho: true
     Description: a
     Type: String
   PRMFRONTENDENCRYPTIONKEY:
+    NoEcho: true
     Description: a
     Type: String
   PRMFRONTENDAPPPASSWORD:
+    NoEcho: true
     Description: a
     Type: String
   PRMFRONTENDANDREAADMINEMAIL:
+    NoEcho: true
     Description: a
     Type: String
   PRMFRONTENDADMINSENDEREMAIL:
+    NoEcho: true
     Description: a
     Type: String
   PRMDBMONGOUSERPASSWORD:
+    NoEcho: true
     Description: a
     Type: String
   PRMDBUSERNAME:
+    NoEcho: true 
     Description: a
     Type: String
 
