@@ -8,6 +8,7 @@ Simple Java backend
 
 NEXT EPISODE: 
 - use domain yissok.com instead of public ip
+- ssl
 - TEARDOWN - delete vpc endpoint > network interface > vpc
 
 

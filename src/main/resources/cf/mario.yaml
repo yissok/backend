@@ -111,21 +111,14 @@ Resources:
         Fn::Base64: !Sub
             - |
               #!/bin/bash
-              echo "haro everynyan"
+              echo "haro everynyan!"
               FRONTENDJWSSECRET=${PRMFRONTENDJWSSECRET}
-              echo ${FRONTENDJWSSECRET}
               FRONTENDENCRYPTIONKEY=${PRMFRONTENDENCRYPTIONKEY}
-              echo ${FRONTENDENCRYPTIONKEY}
               FRONTENDAPPPASSWORD=${PRMFRONTENDAPPPASSWORD}
-              echo ${FRONTENDAPPPASSWORD}
               FRONTENDANDREAADMINEMAIL=${PRMFRONTENDANDREAADMINEMAIL}
-              echo ${FRONTENDANDREAADMINEMAIL}
               FRONTENDADMINSENDEREMAIL=${PRMFRONTENDADMINSENDEREMAIL}
-              echo ${FRONTENDADMINSENDEREMAIL}
               DBMONGOUSERPASSWORD=${PRMDBMONGOUSERPASSWORD}
-              echo ${DBMONGOUSERPASSWORD}
               DBUSERNAME=${PRMDBUSERNAME}
-              echo ${DBUSERNAME}
               sudo su --login
               cd ~
               set -e
@@ -165,7 +158,16 @@ Resources:
           SubnetId: !Ref MySubnet
           GroupSet:
             - !Ref MySecurityGroup
-
+  DNS:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Ref HostedZoneName
+      Comment: Alias Record
+      Name: 'yissok.com'
+      Type: A
+      TTL: '300'
+      ResourceRecords:
+        - !GetAtt MyEC2Instance.PublicIp
   MyRouteTableAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
