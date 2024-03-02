@@ -7,11 +7,7 @@ Simple Java backend
 ## TODO
 
 NEXT EPISODE: 
-- create stack cli
-- continue execution 10 min after create stack
-- java create pr to update s3 location of zip in cloudformation
-- create update cf step on separate branch
-- merge create and update steps i.e. if it does not exist, create, if not, update
+- use domain yissok.com instead of public ip
 - TEARDOWN - delete vpc endpoint > network interface > vpc
 
 
@@ -61,6 +57,11 @@ TODO ARCHIVE
 - ~~or https://repost.aws/knowledge-center/api-gateway-private-cross-account-vpce~~
 - ~~you got it working manually but cf template is still missing something, getting [ec2-user@ip-10-0-0-27 ~]$ curl https://qgay44hpqj.execute-api.us-east-1.amazonaws.com/Prod/ curl: (6) Could not resolve host: qgay44hpqj.execute-api.us-east-1.amazonaws.com from instance~~
 - ~~add depends on to set order in cf~~
+- create stack cli
+- continue execution 10 min after create stack
+- java create pr to update s3 location of zip in cloudformation
+- create update cf step on separate branch
+- merge create and update steps i.e. if it does not exist, create, if not, update
 - it was vpc endpoint... so just do it via cli in gh actions after cf is created
   - aws ec2 describe-vpcs --filters "Name=tag:Name,Values=MyVPC" --query "Vpcs[0].VpcId" --output text
   - aws ec2 describe-security-groups  --filters "Name=tag:Name,Values=MySecurityGroup" --query "SecurityGroups[0].GroupId" --output text
