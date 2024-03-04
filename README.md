@@ -10,7 +10,7 @@ NEXT EPISODE:
 - use domain yissok.com instead of public ip
 - ssl
 - TEARDOWN - delete vpc endpoint > network interface > vpc
-
+- test from alpine
 
 ...
 
