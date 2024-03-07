@@ -4,10 +4,16 @@ Simple Java backend
 
 ./gradlew clean buildZip
 
+# setup caveats beyond cloudformation
+
+- choose elastic ip manually
+- create vpc link separately (script for this is in gh actions)
+
 ## TODO
 
 NEXT EPISODE: 
 - use domain yissok.com instead of public ip
+  - create elastic ip to associate
 - ssl
 - TEARDOWN - delete vpc endpoint > network interface > vpc
 

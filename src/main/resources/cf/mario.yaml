@@ -169,6 +169,11 @@ Resources:
           SubnetId: !Ref MySubnet
           GroupSet:
             - !Ref MySecurityGroup
+  MyEIPAssociation:
+    Type: 'AWS::EC2::EIPAssociation'
+    Properties:
+      InstanceId: !Ref MyEC2Instance
+      AllocationId: 'eipalloc-09abb573ae98c12cf'
   DNS:
     Type: AWS::Route53::RecordSet
     Properties:
