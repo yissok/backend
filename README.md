@@ -7,11 +7,15 @@
 - choose elastic ip manually
 - create vpc link separately (script for this is in gh actions)
 
+# useful
+- /var/log/cloud-init.log for user data log
+- npm install -g forever && forever start server.js
+
 # TODO
 
 NEXT EPISODE:
-- put cert in parameter store
 - retrieve cert in userdata and put it in certs dir
+  -  Unable to locate credentials. You can configure credentials by running "aws configure".
 
 
 ---
@@ -23,10 +27,11 @@ NEXT EPISODE:
 ---
 
 # TODO GRAVEYARD
+- a
+- put cert in parameter store
 - use domain yissok.com instead of public ip
   - create elastic ip to associate
 - ssl
-
 - upload jar s3
 - ~~use cli~~
 - ~~use githubaction~~
