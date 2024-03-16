@@ -11,21 +11,29 @@ Simple Java backend
 
 ## TODO
 
-NEXT EPISODE: 
+NEXT EPISODE:
+- put cert in parameter store
+- retrieve cert in userdata and put it in certs dir
+
+
+---
+
+---
+
+---
+
+---
+
+TODO GRAVEYARD
 - use domain yissok.com instead of public ip
   - create elastic ip to associate
 - ssl
-- TEARDOWN - delete vpc endpoint > network interface > vpc
-
-
-...
-
 - upload jar s3
-  - ~~use cli~~
-  - ~~use githubaction~~
-    - ~~install java~~
-    - ~~install gradle~~
-    - ~~package app~~
+- ~~use cli~~
+- ~~use githubaction~~
+  - ~~install java~~
+  - ~~install gradle~~
+  - ~~package app~~
 - store aws secret
   - ~~use secret to upload jar~~
   - use secret with CF https://stackoverflow.com/questions/62521811/how-to-pass-parameter-as-a-file-in-aws-cloudformation-deploy
@@ -50,11 +58,6 @@ NEXT EPISODE:
   - also test out if this works "Condition": { "StringNotEqualsIfExists": { "aws:username": "mario" } }
 
 aws s3 cp src/main/resources/cf/mario.yaml s3://andreaciao/cf/
-
-
-
-
-TODO ARCHIVE
 
 - ~~read through Creating a private API in Amazon API Gateway article again or find some tutorial~~
 - ~~rebuild stack~~
@@ -110,3 +113,44 @@ TODO ARCHIVE
   ]
 }
 ```
+
+---
+
+---
+
+---
+
+---
+
+CERT STUFF
+
+  ```bash
+  CANAME=MyOrg-RootCA
+  openssl genrsa -aes256 -out $CANAME.key 4096
+  openssl req -x509 -new -nodes -key $CANAME.key -sha256 -days 1826 -out $CANAME.crt
+  ```
+
+- install by double clicking res file
+
+  ```bash
+  MYCERT=MyServer
+  openssl req -new -nodes -out $MYCERT.csr -newkey rsa:4096 -keyout $MYCERT.key
+  touch $MYCERT.v3.ext
+  ```
+- paste this
+
+  ```
+  authorityKeyIdentifier=keyid,issuer
+  basicConstraints=CA:FALSE
+  keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+  subjectAltName = @alt_names
+  
+  [alt_names]
+  DNS.1 = localhost
+  ```
+- sign
+
+  ```bash
+  openssl x509 -req -in $MYCERT.csr -CA $CANAME.crt -CAkey $CANAME.key -CAcreateserial -out $MYCERT.crt -days 730 -sha256 -extfile $MYCERT.v3.ext
+  ```
+- TEARDOWN - delete vpc endpoint > network interface > vpc
