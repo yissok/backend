@@ -1,8 +1,6 @@
 # backend
 
-Simple Java backend
-
-./gradlew clean buildZip
+>>>>>>>Simple Java backend
 
 # setup caveats beyond cloudformation
 
@@ -28,6 +26,7 @@ NEXT EPISODE:
 - use domain yissok.com instead of public ip
   - create elastic ip to associate
 - ssl
+
 - upload jar s3
 - ~~use cli~~
 - ~~use githubaction~~
