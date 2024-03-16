@@ -6,7 +6,7 @@ on:
       - java
       - create-cf
       - update-cf
-      - test #main #CHANGE_ME_TO_main_WHEN_YOU_WANT_TO_DEPLOY_AT_EVERY_COMMIT
+      - test2 #main #CHANGE_ME_TO_main_WHEN_YOU_WANT_TO_DEPLOY_AT_EVERY_COMMIT
 
 jobs:
   deploy-java:
