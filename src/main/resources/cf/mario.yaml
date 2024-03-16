@@ -181,16 +181,6 @@ Resources:
     Properties:
       InstanceId: !Ref MyEC2Instance
       AllocationId: 'eipalloc-09abb573ae98c12cf'
-  DNS:
-    Type: AWS::Route53::RecordSet
-    Properties:
-      HostedZoneName: !Ref HostedZoneName
-      Comment: Alias Record
-      Name: 'yissok.com'
-      Type: A
-      TTL: '300'
-      ResourceRecords:
-        - !GetAtt MyEC2Instance.PublicIp
   MyRouteTableAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
