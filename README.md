@@ -28,8 +28,10 @@ NEXT EPISODE:
 
 # TODO GRAVEYARD
 - a
-![IMG_B11D62A14D37-1](https://github.com/yissok/backend/assets/20245218/1b8479fc-6a80-46af-9924-a5717d46c95f)
-<img width="715" alt="Screenshot 2024-03-16 at 08 49 34" src="https://github.com/yissok/backend/assets/20245218/5f4db144-3ee0-4ad5-b63c-15e3c8801c92">
+
+<img height="300" alt="Screenshot 2024-03-16 at 08 49 34" src="https://github.com/yissok/backend/assets/20245218/1b8479fc-6a80-46af-9924-a5717d46c95f">
+<img height="300" alt="Screenshot 2024-03-16 at 08 49 34" src="https://github.com/yissok/backend/assets/20245218/5f4db144-3ee0-4ad5-b63c-15e3c8801c92">
+
 - put cert in parameter store
 - use domain yissok.com instead of public ip
   - create elastic ip to associate
