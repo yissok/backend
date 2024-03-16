@@ -9,7 +9,7 @@ Simple Java backend
 - choose elastic ip manually
 - create vpc link separately (script for this is in gh actions)
 
-## TODO
+# TODO
 
 NEXT EPISODE:
 - put cert in parameter store
@@ -24,7 +24,7 @@ NEXT EPISODE:
 
 ---
 
-TODO GRAVEYARD
+# TODO GRAVEYARD
 - use domain yissok.com instead of public ip
   - create elastic ip to associate
 - ssl
@@ -122,7 +122,7 @@ aws s3 cp src/main/resources/cf/mario.yaml s3://andreaciao/cf/
 
 ---
 
-CERT STUFF
+# CERT STUFF
 
   ```bash
   CANAME=MyOrg-RootCA

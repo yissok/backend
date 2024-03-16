@@ -144,6 +144,13 @@ Resources:
               sudo yum install git -y
               sudo git clone https://github.com/yissok/node-bastion.git
               cd node-bastion
+              
+              mkdir certs
+              yissok_online_key=$(aws ssm get-parameter --name "yissok.online.key" --query "Parameter.Value" --output text)
+              yissok_online_crt=$(aws ssm get-parameter --name "yissok_online.crt" --query "Parameter.Value" --output text)
+              echo "$yissok_online_key" > certs/yissok.online.key
+              echo "$yissok_online_crt" > certs/yissok_online.crt
+              
               sudo chown -R $(whoami) ~/.npm
               sudo mkdir -m 777 node_modules
               sudo chmod -R 777 .
