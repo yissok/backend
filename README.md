@@ -8,14 +8,18 @@
 - create vpc link separately (script for this is in gh actions)
 
 # useful
-- /var/log/cloud-init.log for user data log
-- npm install -g forever && forever start server.js
+- when node bastion aint running after deploy
+  - /var/log/cloud-init.log for user data log
+- when you fix something while ssh'd and want to let it run after you close the session
+  - npm install -g forever && forever start server.js
 
 # TODO
 
 NEXT EPISODE:
 - retrieve cert in userdata and put it in certs dir
   -  Unable to locate credentials. You can configure credentials by running "aws configure".
+- after being able to access parameter store, move all secrets from gh actions to there 
+- when switching to pushing to main updating whole stack perhaps you should pull the node bastion ec2 into a separate cf template so that it doesn't go offline, idea would be to start doing some proper html serving via static s3 bucket instead so no downtime + when api changes, node bastion will gracefully let user know "maintainance period"
 
 
 ---
