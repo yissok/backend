@@ -6,7 +6,7 @@ on:
       - java
       - create-cf
       - update-cf
-      - main #main #CHANGE_ME_TO_main_WHEN_YOU_WANT_TO_DEPLOY_AT_EVERY_COMMIT
+      - aaaaaa #main #CHANGE_ME_TO_main_WHEN_YOU_WANT_TO_DEPLOY_AT_EVERY_COMMIT
 
 jobs:
   deploy-java:
@@ -68,15 +68,8 @@ jobs:
             --template-url "$HTTPS_TEMPLATE_URL" \
             --region "$REGION" \
             --capabilities CAPABILITY_IAM \
-            --parameters  ParameterKey=PRMFRONTENDJWSSECRET,ParameterValue=${{ secrets.FRONTENDJWSSECRET }} \
-                          ParameterKey=PRMFRONTENDENCRYPTIONKEY,ParameterValue=${{ secrets.FRONTENDENCRYPTIONKEY }} \
-                          ParameterKey=PRMFRONTENDAPPPASSWORD,ParameterValue=${{ secrets.FRONTENDAPPPASSWORD }} \
-                          ParameterKey=PRMFRONTENDANDREAADMINEMAIL,ParameterValue=${{ secrets.FRONTENDANDREAADMINEMAIL }} \
-                          ParameterKey=PRMFRONTENDADMINSENDEREMAIL,ParameterValue=${{ secrets.FRONTENDADMINSENDEREMAIL }} \
-                          ParameterKey=PRMDBMONGOUSERPASSWORD,ParameterValue=${{ secrets.DBMONGOUSERPASSWORD }} \
-                          ParameterKey=PRMAWSACCESSKEYID,ParameterValue=${{ secrets.AWS_ACCESS_KEY_ID }} \
-                          ParameterKey=PRMAWSSECRETACCESSKEY,ParameterValue=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-                          ParameterKey=PRMDBUSERNAME,ParameterValue=${{ secrets.DBUSERNAME }}
+            --parameters  ParameterKey=PRMAWSACCESSKEYID,ParameterValue=${{ secrets.AWS_ACCESS_KEY_ID }} \
+                          ParameterKey=PRMAWSSECRETACCESSKEY,ParameterValue=${{ secrets.AWS_SECRET_ACCESS_KEY }}
 #          while true; do
 #            status=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query 'Stacks[0].StackStatus' --output text)
 #            case $status in

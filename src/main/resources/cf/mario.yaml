@@ -2,34 +2,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Parameters:
-  PRMFRONTENDJWSSECRET:
-    NoEcho: true
-    Description: a
-    Type: String
-  PRMFRONTENDENCRYPTIONKEY:
-    NoEcho: true
-    Description: a
-    Type: String
-  PRMFRONTENDAPPPASSWORD:
-    NoEcho: true
-    Description: a
-    Type: String
-  PRMFRONTENDANDREAADMINEMAIL:
-    NoEcho: true
-    Description: a
-    Type: String
-  PRMFRONTENDADMINSENDEREMAIL:
-    NoEcho: true
-    Description: a
-    Type: String
-  PRMDBMONGOUSERPASSWORD:
-    NoEcho: true
-    Description: a
-    Type: String
-  PRMDBUSERNAME:
-    NoEcho: true 
-    Description: a
-    Type: String
   PRMAWSSECRETACCESSKEY:
     NoEcho: true 
     Description: a
@@ -125,67 +97,76 @@ Resources:
     Properties:
       ImageId: 'ami-0cb6fec6f40971379'  # Specify your AMI ID
       InstanceType: 't4g.nano'  # Set instance type to t4g.nano
-      KeyName: 'luigi'  # Specify your key pair name
+      KeyName: 'Luigi3'  # Specify your key pair name
       UserData:
         Fn::Base64: !Sub
             - |
               #!/bin/bash
+              
+              install_node() {
+                sudo yum install https://rpm.nodesource.com/pub_21.x/nodistro/repo/nodesource-release-nodistro-1.noarch.rpm -y
+                curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+                export NVM_DIR="$HOME/.nvm"
+                [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+                source ~/.bash_profile
+                nvm install node
+                node -v
+                npm -v
+              }
+              
+              setup() {
+                AWSSECRETACCESSKEY=${PRMAWSSECRETACCESSKEY}
+                AWSACCESSKEYID=${PRMAWSACCESSKEYID}
+                sudo su --login
+                cd ~
+                set -e # fail if error
+                install_node()
+                sudo yum install git -y
+              }
+              
+              get_ssm_parameter() {
+                local parameter_name="$1"
+                aws ssm get-parameter --name "$parameter_name" --query "Parameter.Value" --with-decryption --output text
+              }
+              
+              import_ssm() { # all exported secrets are used when node server is run
+                yissok_online_key=$(get_ssm_parameter "yissok.online.key")
+                yissok_online_crt=$(get_ssm_parameter "yissok_online.crt")
+                echo "$yissok_online_key" > certs/yissok.online.key
+                echo "$yissok_online_crt" > certs/yissok_online.crt
+                export FRONTEND_JWS_SECRET=$(get_ssm_parameter "FRONTEND_JWS_SECRET")
+                export FRONTEND_ENCRYPTION_KEY=$(get_ssm_parameter "FRONTEND_ENCRYPTION_KEY")
+                export FRONTEND_APP_PASSWORD=$(get_ssm_parameter "FRONTEND_APP_PASSWORD")
+                export FRONTEND_ANDREA_ADMIN_EMAIL=$(get_ssm_parameter "FRONTEND_ANDREA_ADMIN_EMAIL")
+                export FRONTEND_ADMIN_SENDER_EMAIL=$(get_ssm_parameter "FRONTEND_ADMIN_SENDER_EMAIL")
+                export DB_MONGOUSER_PASSWORD=$(get_ssm_parameter "DB_MONGOUSER_PASSWORD")
+                export DB_USERNAME=$(get_ssm_parameter "DB_USERNAME")
+              }
+              
+              set_aws_config_env() {
+                export AWS_SECRET_ACCESS_KEY=$AWSSECRETACCESSKEY
+                export AWS_ACCESS_KEY_ID=$AWSACCESSKEYID
+                export AWS_DEFAULT_REGION=us-east-1
+              }
+              
+              set_permissions_for_node() {
+                sudo chown -R $(whoami) ~/.npm
+                sudo mkdir -m 777 node_modules
+                sudo chmod -R 777 .
+              }
+              
               echo "haro everynyan!"
-              FRONTENDJWSSECRET=${PRMFRONTENDJWSSECRET}
-              FRONTENDENCRYPTIONKEY=${PRMFRONTENDENCRYPTIONKEY}
-              FRONTENDAPPPASSWORD=${PRMFRONTENDAPPPASSWORD}
-              FRONTENDANDREAADMINEMAIL=${PRMFRONTENDANDREAADMINEMAIL}
-              FRONTENDADMINSENDEREMAIL=${PRMFRONTENDADMINSENDEREMAIL}
-              DBMONGOUSERPASSWORD=${PRMDBMONGOUSERPASSWORD}
-              AWSSECRETACCESSKEY=${PRMAWSSECRETACCESSKEY}
-              AWSACCESSKEYID=${PRMAWSACCESSKEYID}
-              DBUSERNAME=${PRMDBUSERNAME}
-              sudo su --login
-              cd ~
-              set -e
-              sudo yum install https://rpm.nodesource.com/pub_21.x/nodistro/repo/nodesource-release-nodistro-1.noarch.rpm -y
-              curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
-              export NVM_DIR="$HOME/.nvm"
-              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-              source ~/.bash_profile
-              nvm install node
-              node -v
-              npm -v
-              sudo yum install git -y
+              setup()
               sudo git clone https://github.com/yissok/node-bastion.git
               cd node-bastion
-              
-              export AWS_SECRET_ACCESS_KEY=$AWSSECRETACCESSKEY
-              export AWS_ACCESS_KEY_ID=$AWSACCESSKEYID
-              export AWS_DEFAULT_REGION=us-east-1
-              
+              set_aws_config_env()
               mkdir certs
-              yissok_online_key=$(aws ssm get-parameter --name "yissok.online.key" --query "Parameter.Value" --with-decryption --output text)
-              yissok_online_crt=$(aws ssm get-parameter --name "yissok_online.crt" --query "Parameter.Value" --with-decryption --output text)
-              echo "$yissok_online_key" > certs/yissok.online.key
-              echo "$yissok_online_crt" > certs/yissok_online.crt
-              
-              sudo chown -R $(whoami) ~/.npm
-              sudo mkdir -m 777 node_modules
-              sudo chmod -R 777 .
+              import_ssm()
+              set_permissions_for_node()
               npm install
-              export FRONTENDJWSSECRET
-              export FRONTENDENCRYPTIONKEY
-              export FRONTENDAPPPASSWORD
-              export FRONTENDANDREAADMINEMAIL
-              export FRONTENDADMINSENDEREMAIL
-              export DBMONGOUSERPASSWORD
-              export DBUSERNAME
-              npm start # implicit here is that node will use all FRONTEND_* secret variables
-            - FRONTENDJWSSECRET: !Ref PRMFRONTENDJWSSECRET
-              FRONTENDENCRYPTIONKEY: !Ref PRMFRONTENDENCRYPTIONKEY
-              FRONTENDAPPPASSWORD: !Ref PRMFRONTENDAPPPASSWORD
-              FRONTENDANDREAADMINEMAIL: !Ref PRMFRONTENDANDREAADMINEMAIL
-              FRONTENDADMINSENDEREMAIL: !Ref PRMFRONTENDADMINSENDEREMAIL
-              DBMONGOUSERPASSWORD: !Ref PRMDBMONGOUSERPASSWORD
-              AWSSECRETACCESSKEY: !Ref PRMAWSSECRETACCESSKEY
-              AWSACCESSKEYID: !Ref PRMAWSACCESSKEYID 
-              DBUSERNAME: !Ref PRMDBUSERNAME
+              npm start
+            - AWSSECRETACCESSKEY: !Ref PRMAWSSECRETACCESSKEY
+              AWSACCESSKEYID: !Ref PRMAWSACCESSKEYID
       NetworkInterfaces:
         - AssociatePublicIpAddress: true
           DeviceIndex: 0
