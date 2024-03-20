@@ -18,6 +18,7 @@
 NEXT EPISODE:
 - when following the link from email, have js onload ajax to do the post to properly register instead of having the user click
 - tool to generate guest username and password
+- per user rate limiting
 - set up proxy to static s3 url
 - set up githubactions not to trigger api gateway redeploy if the change is in folder for static website and not re upload static website if changes are in java files
   - restructure project to have API folder, UI folder and infrastructure.yaml  
