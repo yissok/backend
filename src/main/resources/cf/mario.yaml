@@ -120,7 +120,7 @@ Resources:
                 sudo su --login
                 cd ~
                 set -e # fail if error
-                install_node()
+                install_node
                 sudo yum install git -y
               }
               
@@ -156,13 +156,13 @@ Resources:
               }
               
               echo "haro everynyan!"
-              setup()
+              setup
               sudo git clone https://github.com/yissok/node-bastion.git
               cd node-bastion
-              set_aws_config_env()
+              set_aws_config_env
               mkdir certs
-              import_ssm()
-              set_permissions_for_node()
+              import_ssm
+              set_permissions_for_node
               npm install
               npm start
             - AWSSECRETACCESSKEY: !Ref PRMAWSSECRETACCESSKEY
