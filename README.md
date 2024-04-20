@@ -9,7 +9,7 @@
 
 # useful
 - when node bastion aint running after deploy
-  - /var/log/cloud-init.log for user data log
+  - /var/log/cloud-init-output.log for user data log
 - when you fix something while ssh'd and want to let it run after you close the session
   - npm install -g forever && forever start server.js
 
@@ -17,7 +17,6 @@
 
 NEXT EPISODE:
 moved todos to https://github.com/yissok/node-bastion
-
 ---
 
 ---
@@ -30,13 +29,11 @@ moved todos to https://github.com/yissok/node-bastion
 - a
 
 
-
-
 - retrieve cert in userdata and put it in certs dir
   -  Unable to locate credentials. You can configure credentials by running "aws configure".
 - after being able to access parameter store, move all secrets from gh actions to there
 - when switching to pushing to main updating whole stack perhaps you should pull the node bastion ec2 into a separate cf template so that it doesn't go offline, idea would be to start doing some proper html serving via static s3 bucket instead so no downtime + when api changes, node bastion will gracefully let user know "maintainance period"
-
+- when switching to pushing to main updating whole stack perhaps you should pull the node bastion ec2 into a separate cf template so that it doesn't go offline, idea would be to start doing some proper html serving via static s3 bucket instead so no downtime + when api changes, node bastion will gracefully let user know "maintainance period"
 <img height="300" alt="Screenshot 2024-03-16 at 08 49 34" src="https://github.com/yissok/backend/assets/20245218/1b8479fc-6a80-46af-9924-a5717d46c95f">
 <img height="300" alt="Screenshot 2024-03-16 at 08 49 34" src="https://github.com/yissok/backend/assets/20245218/5f4db144-3ee0-4ad5-b63c-15e3c8801c92">
 
