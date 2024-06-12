@@ -1,4 +1,14 @@
 spring:
+  cloud:
+    aws:
+      region:
+        static: us-east-1
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+      s3:
+        endpoint: ${AWS_S3_ENDPOINT}
+        bucket: ${DB_BUCKET_NAME}
   data:
     mongodb:
 #      host: localhost
@@ -6,3 +16,17 @@ spring:
 #      database: testSpring
       uri: mongodb+srv://mongouser:${MONGODB_PASSWORD}@cluster0.xecpsrk.mongodb.net/testSpring
   output.ansi.enabled: ALWAYS
+
+#dev
+---
+
+spring:
+  config.activate.on-profile: dev
+  cloud:
+    aws:
+      credentials:
+        access-key: test
+        secret-key: test
+      s3:
+        endpoint: http://localhost:4566
+        bucket: my-bucket
