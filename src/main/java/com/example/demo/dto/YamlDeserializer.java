@@ -9,56 +9,59 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.Stack;
 
 public class YamlDeserializer {
 
-    public static Filesystem deserializeYaml(String yamlRootStr) throws IOException {
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        YamlRoot yamlRoot = mapper.readValue(yamlRootStr, YamlRoot.class);
-
-        Map<String, TagFolder> tagFolderMap = new HashMap<>();
-        Map<String, Note> noteMap = new HashMap<>();
-
-        // First pass to create all TagFolder and Note objects
-        for (YamlNode yamlNode : yamlRoot.getNodes()) {
-            if (yamlNode.getContent() == null) {
-                TagFolder tagFolder = new TagFolder();
-                tagFolder.setName(yamlNode.getName());
-                tagFolderMap.put(yamlNode.getName(), tagFolder);
-            } else {
-                Note note = new Note();
-                note.setName(yamlNode.getName());
-                note.setContent(yamlNode.getContent());
-                noteMap.put(yamlNode.getName(), note);
-            }
-        }
-
-        // Second pass to set parent and children
-        for (YamlNode yamlNode : yamlRoot.getNodes()) {
-            if (yamlNode.getContent() == null) {
-                TagFolder tagFolder = tagFolderMap.get(yamlNode.getName());
-                if (yamlNode.getParent() != null) {
-                    tagFolder.setParent(tagFolderMap.get(yamlNode.getParent()));
-                }
-                if (yamlNode.getChildren() != null) {
-                    for (String childName : yamlNode.getChildren()) {
-                        if (tagFolder.getChildren() != null) {
-                            tagFolder.getChildren().add(tagFolderMap.get(childName));
-                        }
-                    }
-                }
-            } else {
-                Note note = noteMap.get(yamlNode.getName());
-                if (yamlNode.getParent() != null) {
-                    note.setParent(tagFolderMap.get(yamlNode.getParent()));
-                }
-            }
-        }
-
+    enum TreePart{
+        TAG,NOTE,END
+    }
+    public static Filesystem deserializeYaml(String serializedTree) {
         Filesystem filesystem = new Filesystem();
-        filesystem.setNotes(new ArrayList<>(noteMap.values()));
-        filesystem.setTagFolders(new ArrayList<>(tagFolderMap.values()));
+        Stack<TagFolder> folderStack = new Stack<>();
+
+        String[] items = serializedTree.trim().split("-");
+
+        for (String el:items) {
+            TreePart part = getTreePart(el);
+            if (part==TreePart.TAG){
+                TagFolder t = new TagFolder(el);
+                if (!folderStack.isEmpty()){
+                    TagFolder parent = folderStack.peek();
+                    t.setParent(parent);
+                    parent.getChildren().add(t);
+                }
+                folderStack.add(t);
+                filesystem.getTagFolders().add(t);
+            }
+            if (part==TreePart.END){
+                folderStack.pop();
+            }
+            if (part==TreePart.NOTE){
+                Note n = new Note(getNoteName(el),getNoteContent(el));
+                n.setParent(folderStack.peek());
+                filesystem.getNotes().add(n);
+            }
+        }
 
         return filesystem;
+    }
+
+    private static String getNoteContent(String el) {
+        return el.split(":")[1];
+    }
+
+    private static String getNoteName(String el) {
+        return el.split(":")[0];
+    }
+
+    public static TreePart getTreePart(String str) {
+        if (str.contains(":"))
+            return TreePart.NOTE;
+        else
+            if(str.equals("_"))
+                return TreePart.END;
+            else
+                return TreePart.TAG;
     }
 }

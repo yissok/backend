@@ -11,48 +11,42 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 class S3ServiceTest {
-    String dbFile =
+    String serialisedTreeFile =
             """
-nodes:
-  - name: nintendo
-    parent: root
-    content: nil
-    children:
-      - zelda
-      - smash
-  - name: zelda
-    parent: nintendo
-    content: nil
-    children:
-      - link
-  - name: smash
-    parent: nintendo
-    content: nil
-    children: []
-  - name: link
-    parent: zelda
-    content: nil
-    children:
-      - sword
-  - name: sword
-    parent: link
-    content: "This is the content of the sword file."
-    children: nil
+ROOT-Nintendo-Smash-_-Zelda-Link-Sword:iamasword
+""";
+    String serialisedAddition =
+            """
+ROOT-Nintendo-Zelda-Wolf-Shield:iamashield-_-_-_-Xbox-_-Playstation
+""";
+    String serialisedDeletion =
+            """
+ROOT-Nintendo-!Zelda-_-!Xbox
+""";
+
+    String serialisedDeletionAndAddition =
+            """
+ROOT-!Nintendo-Nvidia-chip-_-!chip-Apple-iphone-6-_-7-_-8-_-9-iphone9news-_-_-!9-X-11-12-13-14-15
 """;
 
     @Test
-    void testAddingNode() throws IOException {
-        Filesystem backupImport = new Filesystem(dbFile);
-        Filesystem filesystem = YamlDeserializer.deserializeYaml(dbFile);
+    void testInit() throws IOException {
+        Filesystem filesystem = YamlDeserializer.deserializeYaml(serialisedTreeFile);
         System.out.println("hello");
     }
 
     @Test
-    void testRemovingNode() {}
+    void testRemoving() {}
+
+    @Test
+    void testAdding() {}
+
+    @Test
+    void testAddingAndRemoving() {}
 
     @AfterAll
     @BeforeAll
-    static void stuff() {
+    static void padLogs() {
 
         System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n");
     }
