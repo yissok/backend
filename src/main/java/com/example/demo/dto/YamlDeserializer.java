@@ -42,7 +42,9 @@ public class YamlDeserializer {
                 }
                 if (yamlNode.getChildren() != null) {
                     for (String childName : yamlNode.getChildren()) {
-                        tagFolder.getChildren().add(tagFolderMap.get(childName));
+                        if (tagFolder.getChildren() != null) {
+                            tagFolder.getChildren().add(tagFolderMap.get(childName));
+                        }
                     }
                 }
             } else {
