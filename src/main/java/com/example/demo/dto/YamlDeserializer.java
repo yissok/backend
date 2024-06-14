@@ -4,65 +4,86 @@ package com.example.demo.dto;
 import com.example.demo.model.Filesystem;
 import com.example.demo.model.Note;
 import com.example.demo.model.TagFolder;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.Stack;
-import java.util.stream.Collectors;
 
 public class YamlDeserializer {
 
-    enum TreePart{
-        TAG,NOTE, REMOVE, END
+    enum TreePart {
+        TAG,
+        NOTE,
+        REMOVE,
+        END
     }
+
     public static Filesystem deserializeYaml(String serializedTree, Filesystem existingFilesystem) {
-        Filesystem filesystem = existingFilesystem==null?new Filesystem():existingFilesystem;
+        Filesystem filesystem = existingFilesystem == null ? new Filesystem() : existingFilesystem;
         Stack<TagFolder> folderStack = new Stack<>();
 
         String[] items = serializedTree.trim().split("-");
 
-        for (String el:items) {
+        for (String el : items) {
             TreePart part = getTreePart(el);
-            if (part==TreePart.TAG){
-                TagFolder t = new TagFolder(el);
-                if (!folderStack.isEmpty()){
-                    TagFolder parent = folderStack.peek();//todo instead, get parent name and fetch parent obj from tagfolder map
-                    t.setParent(parent);
-                    parent.getChildren().add(t);
-                }
+            if (part == TreePart.TAG) {
+                TagFolder t = filesystem.getTagFolders().get(el)==null?new TagFolder(el):filesystem.getTagFolders().get(el);
+                TagFolder parent = folderStack.isEmpty()?null:filesystem.getTagFolders().get(folderStack.peek().getName());
+                t.setParent(parent);
+                if( parent!=null)
+                    parent.getChildren().put(el,t);
                 folderStack.add(t);
-                if (filesystem.getTagFolders().stream().filter(tagFolder->tagFolder.getName().equals(el)).toList().isEmpty())
-                    filesystem.getTagFolders().add(t);
+                filesystem.getTagFolders().put(el, t);
             }
-            if (part==TreePart.END){
+            if (part == TreePart.END) {
                 folderStack.pop();
             }
-            if (part==TreePart.NOTE){
-                Note n = new Note(getNoteName(el),getNoteContent(el));
-                n.setParent(folderStack.peek());
-                filesystem.getNotes().add(n);
+            if (part == TreePart.NOTE) {
+                String parentName=folderStack.peek().getName();
+                Note n = new Note(getNoteName(el), getNoteContent(el));
+                n.setParent(filesystem.getTagFolders().get(parentName));
+                filesystem.getNotes().put(getNoteName(el), n);
+                List<Note> parentsNote=filesystem.getFolderToNotes().get(parentName);
+                if (parentsNote==null){
+                    parentsNote=new ArrayList<>();
+                }
+                parentsNote.add(n);
+                filesystem.getFolderToNotes().put(parentName,parentsNote);
             }
-            if (part==TreePart.REMOVE){
-                final String elRm=el.substring(1);
-                List<Note> noteList=filesystem.getNotes().stream().filter(note->note.getName().equals(elRm)).toList();
-                if (!noteList.isEmpty()){
-                    Note n = noteList.getFirst();
-                    filesystem.getNotes().remove(n);
+            if (part == TreePart.REMOVE) {
+                final String elRm = el.substring(1);
+                Note n = filesystem.getNotes().get(elRm);
+                if (n != null) {
+                    filesystem.getNotes().remove(elRm);
                 } else {
-                    List<TagFolder> tagFolderList=filesystem.getTagFolders().stream().filter(tagFolder->tagFolder.getName().equals(elRm)).toList();
-                    if (!tagFolderList.isEmpty()){
-                        TagFolder tf = tagFolderList.getFirst();
-                        filesystem.getTagFolders().remove(tf);
+                    TagFolder tf = filesystem.getTagFolders().get(elRm);
+                    if (tf != null) {
+                        TagFolder removee = filesystem.getTagFolders().remove(elRm);
+                        removee.getParent().getChildren().remove(elRm);
+                        removeChildrenTagsAndNotes(removee, filesystem);
                     } else {
-                        System.out.println("I am not removing this -> "+el);
+                        System.out.println("I am not removing this -> " + el);
                     }
                 }
             }
         }
 
         return filesystem;
+    }
+
+    private static void removeChildrenTagsAndNotes(TagFolder removee, Filesystem filesystem) {
+        //remove notes under removee
+        //remove folders under removee
+        List<Note>childNotes=filesystem.getFolderToNotes().get(removee.getName());
+        if (childNotes!=null){
+            childNotes.forEach(note -> {
+                filesystem.getNotes().remove(note.getName());
+            });
+        }
+        filesystem.getFolderToNotes().remove(removee.getName());
+        filesystem.getTagFolders().remove(removee.getName());
+        for (Map.Entry e:removee.getChildren().entrySet()){
+            removeChildrenTagsAndNotes((TagFolder) e.getValue(),filesystem);
+        }
     }
 
     private static String getNoteContent(String el) {
@@ -73,19 +94,15 @@ public class YamlDeserializer {
         return el.split(":")[0];
     }
 
-    public static TreePart getTreePart(String str) {
+    private static TreePart getTreePart(String str) {
         if (str.contains("!")) {
 
             return TreePart.REMOVE;
         } else {
 
-            if (str.contains(":"))
-                return TreePart.NOTE;
-            else
-            if(str.equals("_"))
-                return TreePart.END;
-            else
-                return TreePart.TAG;
+            if (str.contains(":")) return TreePart.NOTE;
+            else if (str.equals("_")) return TreePart.END;
+            else return TreePart.TAG;
         }
     }
 }

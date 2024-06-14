@@ -39,7 +39,15 @@ ROOT-Nintendo-Zelda-Wolf-Shield:iamashield-_-_-_-Xbox-_-Playstation
 ROOT-Nintendo-!Zelda-_-!Xbox
 """;
     @Test
-    void testRemoving() {}
+    void testRemoving() {
+
+        Filesystem filesystem = YamlDeserializer.deserializeYaml(serialisedTreeFile, null);
+        System.out.println("hello");
+        Filesystem filesystem2 = YamlDeserializer.deserializeYaml(serialisedAddition, filesystem);
+        System.out.println("hello");
+        Filesystem filesystem3 = YamlDeserializer.deserializeYaml(serialisedDeletion, filesystem2);
+        System.out.println("hello");
+    }
 
     String serialisedDeletionAndAddition =
             """
