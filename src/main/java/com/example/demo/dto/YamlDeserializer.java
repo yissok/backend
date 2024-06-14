@@ -10,14 +10,15 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.IOException;
 import java.util.*;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 public class YamlDeserializer {
 
     enum TreePart{
-        TAG,NOTE,END
+        TAG,NOTE, REMOVE, END
     }
-    public static Filesystem deserializeYaml(String serializedTree) {
-        Filesystem filesystem = new Filesystem();
+    public static Filesystem deserializeYaml(String serializedTree, Filesystem existingFilesystem) {
+        Filesystem filesystem = existingFilesystem==null?new Filesystem():existingFilesystem;
         Stack<TagFolder> folderStack = new Stack<>();
 
         String[] items = serializedTree.trim().split("-");
@@ -27,12 +28,13 @@ public class YamlDeserializer {
             if (part==TreePart.TAG){
                 TagFolder t = new TagFolder(el);
                 if (!folderStack.isEmpty()){
-                    TagFolder parent = folderStack.peek();
+                    TagFolder parent = folderStack.peek();//todo instead, get parent name and fetch parent obj from tagfolder map
                     t.setParent(parent);
                     parent.getChildren().add(t);
                 }
                 folderStack.add(t);
-                filesystem.getTagFolders().add(t);
+                if (filesystem.getTagFolders().stream().filter(tagFolder->tagFolder.getName().equals(el)).toList().isEmpty())
+                    filesystem.getTagFolders().add(t);
             }
             if (part==TreePart.END){
                 folderStack.pop();
@@ -41,6 +43,22 @@ public class YamlDeserializer {
                 Note n = new Note(getNoteName(el),getNoteContent(el));
                 n.setParent(folderStack.peek());
                 filesystem.getNotes().add(n);
+            }
+            if (part==TreePart.REMOVE){
+                final String elRm=el.substring(1);
+                List<Note> noteList=filesystem.getNotes().stream().filter(note->note.getName().equals(elRm)).toList();
+                if (!noteList.isEmpty()){
+                    Note n = noteList.getFirst();
+                    filesystem.getNotes().remove(n);
+                } else {
+                    List<TagFolder> tagFolderList=filesystem.getTagFolders().stream().filter(tagFolder->tagFolder.getName().equals(elRm)).toList();
+                    if (!tagFolderList.isEmpty()){
+                        TagFolder tf = tagFolderList.getFirst();
+                        filesystem.getTagFolders().remove(tf);
+                    } else {
+                        System.out.println("I am not removing this -> "+el);
+                    }
+                }
             }
         }
 
@@ -56,12 +74,18 @@ public class YamlDeserializer {
     }
 
     public static TreePart getTreePart(String str) {
-        if (str.contains(":"))
-            return TreePart.NOTE;
-        else
+        if (str.contains("!")) {
+
+            return TreePart.REMOVE;
+        } else {
+
+            if (str.contains(":"))
+                return TreePart.NOTE;
+            else
             if(str.equals("_"))
                 return TreePart.END;
             else
                 return TreePart.TAG;
+        }
     }
 }
