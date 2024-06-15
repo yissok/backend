@@ -1,51 +1,63 @@
 /* (C)2024 */
 package com.example.demo.unit;
 
-import com.example.demo.dto.YamlDeserializer;
 import com.example.demo.model.Filesystem;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 
 class S3ServiceTest {
-    String serialisedTreeFile =
-            """
+    String serialisedTreeFile = """
 ROOT-Nintendo-Smash-_-Zelda-Link-Sword:iamasword
 """;
 
     @Test
     void testInit() throws IOException {
-        Filesystem filesystem = YamlDeserializer.deserializeYaml(serialisedTreeFile, null);
+        Filesystem filesystem = Filesystem.createTree(serialisedTreeFile, null);
         System.out.println("hello");
+    }
+
+
+
+    @Test
+    void testSerialisation() throws IOException {
+        Filesystem filesystem = Filesystem.createTree(serialisedTreeFile, null);
+        System.out.println("hello");
+        String generatedSerialisedTree = Filesystem.serialiseTree(filesystem);
+        assertEquals(serialisedTreeFile, generatedSerialisedTree);
     }
 
     String serialisedAddition =
             """
 ROOT-Nintendo-Zelda-Wolf-Shield:iamashield-_-_-_-Xbox-_-Playstation
 """;
+
     @Test
     void testAdding() {
-        Filesystem filesystem = YamlDeserializer.deserializeYaml(serialisedTreeFile, null);
+        Filesystem filesystem = Filesystem.createTree(serialisedTreeFile, null);
         System.out.println("hello");
-        Filesystem filesystem2 = YamlDeserializer.deserializeYaml(serialisedAddition, filesystem);
+        Filesystem filesystem2 = Filesystem.createTree(serialisedAddition, filesystem);
         System.out.println("hello");
     }
 
-    String serialisedDeletion =
-            """
+    String serialisedDeletion = """
 ROOT-Nintendo-!Zelda-_-!Xbox
 """;
+
     @Test
     void testRemoving() {
 
-        Filesystem filesystem = YamlDeserializer.deserializeYaml(serialisedTreeFile, null);
+        Filesystem filesystem = Filesystem.createTree(serialisedTreeFile, null);
         System.out.println("hello");
-        Filesystem filesystem2 = YamlDeserializer.deserializeYaml(serialisedAddition, filesystem);
+        Filesystem filesystem2 = Filesystem.createTree(serialisedAddition, filesystem);
         System.out.println("hello");
-        Filesystem filesystem3 = YamlDeserializer.deserializeYaml(serialisedDeletion, filesystem2);
+        Filesystem filesystem3 = Filesystem.createTree(serialisedDeletion, filesystem2);
         System.out.println("hello");
     }
 
@@ -56,7 +68,6 @@ ROOT-!Nintendo-Nvidia-chip-_-!chip-Apple-iphone-6-_-7-_-8-_-9-iphone9news-_-_-!9
 
     @Test
     void testAddingAndRemoving() {}
-
 
     @Test
     void testInputChangeSetsOutputCompressedTree() {}
