@@ -1,4 +1,3 @@
-/* (C)2024 */
 package com.example.demo.model;
 
 import lombok.Data;
@@ -9,6 +8,12 @@ import java.util.*;
 @NoArgsConstructor
 @Data
 public class Filesystem {
+
+    public static String LB_ROOT = "ROOT";
+    public static String SERIAL_SEPARATOR = "-";
+    public static String SERIAL_BACKWARDS = "_";
+    public static String SERIAL_CONTENT_SEPARATOR = ":";
+
     Map<String, Note> notes = new HashMap<>();
     Map<String, TagFolder> tagFolders = new HashMap<>();
 
@@ -16,7 +21,36 @@ public class Filesystem {
     Map<String, List<Note>> folderToNotes = new HashMap<>();
 
     public static String serialiseTree(Filesystem filesystem) {
-        return null;
+        return serialiseTreeRec(
+                        filesystem,
+                        filesystem.getTagFolders().get(LB_ROOT),
+                        new StringBuilder(),
+                        LB_ROOT)
+                .toString();
+    }
+
+    public static StringBuilder serialiseTreeRec(
+            Filesystem filesystem, TagFolder tf, StringBuilder serialised, String folderLevel) {
+        serialised.append(folderLevel).append(SERIAL_SEPARATOR);
+        // add notes
+        List<Note> notes = filesystem.getFolderToNotes().get(folderLevel);
+        if (notes != null)
+            notes.forEach(
+                    note ->
+                            serialised
+                                    .append(note.getName())
+                                    .append(SERIAL_CONTENT_SEPARATOR)
+                                    .append(note.getContent())
+                                    .append(SERIAL_SEPARATOR));
+        // add folders
+        HashMap<String, TagFolder> folders = tf.getChildren();
+        if (folders != null)
+            folders.forEach(
+                    (name, folder) -> {
+                        serialiseTreeRec(filesystem, folder, serialised, name);
+                    });
+        serialised.append(SERIAL_BACKWARDS).append(SERIAL_SEPARATOR);
+        return serialised;
     }
 
     enum TreePart {
@@ -85,20 +119,19 @@ public class Filesystem {
     }
 
     private static void removeChildrenTagsAndNotes(TagFolder removee, Filesystem filesystem) {
-        // remove notes under removee
-        // remove folders under removee
-        List<Note> childNotes = filesystem.getFolderToNotes().get(removee.getName());
+        List<Note> childNotes =
+                filesystem.getFolderToNotes().get(removee.getName()); // remove notes under removee
         if (childNotes != null) {
             childNotes.forEach(
-                    note -> {
-                        filesystem.getNotes().remove(note.getName());
-                    });
+                    note ->
+                            filesystem
+                                    .getNotes()
+                                    .remove(note.getName())); // remove folders under removee
         }
         filesystem.getFolderToNotes().remove(removee.getName());
         filesystem.getTagFolders().remove(removee.getName());
-        for (Map.Entry e : removee.getChildren().entrySet()) {
-            removeChildrenTagsAndNotes((TagFolder) e.getValue(), filesystem);
-        }
+        removee.getChildren()
+                .forEach((key, value) -> removeChildrenTagsAndNotes(value, filesystem));
     }
 
     private static String getNoteContent(String el) {
@@ -111,10 +144,8 @@ public class Filesystem {
 
     private static TreePart getTreePart(String str) {
         if (str.contains("!")) {
-
             return TreePart.REMOVE;
         } else {
-
             if (str.contains(":")) return TreePart.NOTE;
             else if (str.equals("_")) return TreePart.END;
             else return TreePart.TAG;
