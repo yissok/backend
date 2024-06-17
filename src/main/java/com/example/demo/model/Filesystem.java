@@ -63,59 +63,65 @@ public class Filesystem {
     public static Filesystem createTree(String serializedTree, Filesystem existingFilesystem) {
         Filesystem filesystem = existingFilesystem == null ? new Filesystem() : existingFilesystem;
         Stack<TagFolder> folderStack = new Stack<>();
-
-        String[] items = serializedTree.trim().split("-");
+        String[] items = serializedTree.trim().split(SERIAL_SEPARATOR);
 
         for (String el : items) {
-            TreePart part = getTreePart(el);
-            if (part == TreePart.TAG) {
-                TagFolder t =
-                        filesystem.getTagFolders().get(el) == null
-                                ? new TagFolder(el)
-                                : filesystem.getTagFolders().get(el);
-                TagFolder parent =
-                        folderStack.isEmpty()
-                                ? null
-                                : filesystem.getTagFolders().get(folderStack.peek().getName());
-                t.setParent(parent);
-                if (parent != null) parent.getChildren().put(el, t);
-                folderStack.add(t);
-                filesystem.getTagFolders().put(el, t);
-            }
-            if (part == TreePart.END) {
-                folderStack.pop();
-            }
-            if (part == TreePart.NOTE) {
-                String parentName = folderStack.peek().getName();
-                Note n = new Note(getNoteName(el), getNoteContent(el));
-                n.setParent(filesystem.getTagFolders().get(parentName));
-                filesystem.getNotes().put(getNoteName(el), n);
-                List<Note> parentsNote = filesystem.getFolderToNotes().get(parentName);
-                if (parentsNote == null) {
-                    parentsNote = new ArrayList<>();
-                }
-                parentsNote.add(n);
-                filesystem.getFolderToNotes().put(parentName, parentsNote);
-            }
-            if (part == TreePart.REMOVE) {
-                final String elRm = el.substring(1);
-                Note n = filesystem.getNotes().get(elRm);
-                if (n != null) {
-                    filesystem.getNotes().remove(elRm);
-                } else {
-                    TagFolder tf = filesystem.getTagFolders().get(elRm);
-                    if (tf != null) {
-                        TagFolder removee = filesystem.getTagFolders().remove(elRm);
-                        removee.getParent().getChildren().remove(elRm);
-                        removeChildrenTagsAndNotes(removee, filesystem);
-                    } else {
-                        System.out.println("I am not removing this -> " + el);
-                    }
-                }
+            switch (getTreePart(el)) {
+                case TAG -> addTreeFolder(el, filesystem, folderStack);
+                case NOTE -> addTreeNote(el, filesystem, folderStack);
+                case REMOVE -> removeTreeElement(el, filesystem);
+                case END -> folderStack.pop();
             }
         }
 
         return filesystem;
+    }
+
+    private static void addTreeFolder(
+            String el, Filesystem filesystem, Stack<TagFolder> folderStack) {
+        TagFolder t =
+                filesystem.getTagFolders().get(el) == null
+                        ? new TagFolder(el)
+                        : filesystem.getTagFolders().get(el);
+        TagFolder parent =
+                folderStack.isEmpty()
+                        ? null
+                        : filesystem.getTagFolders().get(folderStack.peek().getName());
+        t.setParent(parent);
+        if (parent != null) parent.getChildren().put(el, t);
+        folderStack.add(t);
+        filesystem.getTagFolders().put(el, t);
+    }
+
+    private static void addTreeNote(
+            String el, Filesystem filesystem, Stack<TagFolder> folderStack) {
+        String parentName = folderStack.peek().getName();
+        Note n = new Note(getNoteName(el), getNoteContent(el));
+        n.setParent(filesystem.getTagFolders().get(parentName));
+        filesystem.getNotes().put(getNoteName(el), n);
+        List<Note> parentsNote = filesystem.getFolderToNotes().get(parentName);
+        if (parentsNote == null) {
+            parentsNote = new ArrayList<>();
+        }
+        parentsNote.add(n);
+        filesystem.getFolderToNotes().put(parentName, parentsNote);
+    }
+
+    private static void removeTreeElement(String el, Filesystem filesystem) {
+        final String elRm = el.substring(1);
+        Note n = filesystem.getNotes().get(elRm);
+        if (n != null) {
+            filesystem.getNotes().remove(elRm);
+        } else {
+            TagFolder tf = filesystem.getTagFolders().get(elRm);
+            if (tf != null) {
+                TagFolder removee = filesystem.getTagFolders().remove(elRm);
+                removee.getParent().getChildren().remove(elRm);
+                removeChildrenTagsAndNotes(removee, filesystem);
+            } else {
+                System.out.println("I am not removing this -> " + el);
+            }
+        }
     }
 
     private static void removeChildrenTagsAndNotes(TagFolder removee, Filesystem filesystem) {
