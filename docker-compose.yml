@@ -1,12 +1,19 @@
 version: '3.8'
 services:
-  localstack:
-    image: localstack/localstack
+#  localstack:
+#    image: localstack/localstack
+#    ports:
+#      - "4566:4566"  # Edge port for all services
+#      - "4572:4572"  # S3 service port
+#    environment:
+#      - SERVICES=s3
+#      - DEBUG=1
+#    volumes:
+#      - "./localstack:/var/lib/localstack"
+  mysql_dcp:
+    container_name: mysql8
+    image: mysql:8.2.0
     ports:
-      - "4566:4566"  # Edge port for all services
-      - "4572:4572"  # S3 service port
+      - "3307:3306"
     environment:
-      - SERVICES=s3
-      - DEBUG=1
-    volumes:
-      - "./localstack:/var/lib/localstack"
+      MYSQL_ROOT_PASSWORD: $MYSQL_PASSWORD
