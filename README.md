@@ -16,7 +16,14 @@
 # TODO
 
 NEXT EPISODE:
-moved todos to https://github.com/yissok/node-bastion
+- 
+- moved todos to https://github.com/yissok/node-bastion
+
+WE ARE BACK
+- get test working localstack s3 passing env variables
+- get the same thing to work in live api gateway
+  - retrieve all ssm parameters maybe within app or find way to extract them from ssm within cloudformation
+
 ---
 
 ---

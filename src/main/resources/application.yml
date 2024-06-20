@@ -11,15 +11,9 @@ spring:
         bucket: ${DB_BUCKET_NAME}
   data:
     mongodb:
-#      host: localhost
-#      port: 27017
-#      database: testSpring
-      uri: mongodb+srv://mongouser:${MONGODB_PASSWORD}@cluster0.xecpsrk.mongodb.net/testSpring
+      uri: mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_COLLECTION}${MONGODB_QUERYPARAMS}
   output.ansi.enabled: ALWAYS
-
-#dev
 ---
-
 spring:
   config.activate.on-profile: dev
   cloud:
