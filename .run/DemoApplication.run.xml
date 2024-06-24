@@ -4,13 +4,12 @@
       <env name="AWS_ACCESS_KEY" value="test_access_key" />
       <env name="S3_TREES_ENDPOINT" value="s3://123412341234-encrypted-note-trees/user-1/1-chg-log.txt" />
       <env name="AWS_SECRET_KEY" value="test_secret_key" />
-      <env name="MONGODB_COLLECTION" value="Book" />
-      <env name="MONGODB_HOST" value="cluster0.aaaaaaa.mongodb.net" />
+      <env name="MONGODB_HOST" value="127.0.0.1:27017" />
       <env name="MONGODB_PASSWORD" value="mongor00t" />
       <env name="MONGODB_QUERYPARAMS" value="?authSource=admin" />
       <env name="MONGODB_USER" value="mongouser" />
       <env name="S3_TREES_BUCKET_NAME" value="123412341234-encrypted-note-trees" />
-      <env name="MONGODB_DB" value="testSpring" />
+      <env name="MONGODB_DB" value="test_db" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="com.example.demo.DemoApplication" />
     <module name="demo.main" />
