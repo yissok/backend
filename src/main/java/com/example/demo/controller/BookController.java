@@ -22,7 +22,8 @@ public class BookController {
 
     @GetMapping("/all")
     public List<Book> getBooks(){
-        return repo.findAll();
+        List<Book> books = repo.findAll();
+        return books;
     }
 
     @GetMapping("/get/{id}")

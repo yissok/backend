@@ -22,9 +22,4 @@ spring:
 
   data:
     mongodb:
-#      host: localhost
-#      port: 27017
-#      database: test_db
-#      username: ${MONGODB_USER}
-#      password: ${MONGODB_PASSWORD}
       uri: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_DB}${MONGODB_QUERYPARAMS}
