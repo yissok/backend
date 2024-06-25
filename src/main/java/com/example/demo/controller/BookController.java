@@ -22,7 +22,7 @@ public class BookController {
 
     @GetMapping("/all")
     public List<Book> getBooks(){
-        List<Book> books = repo.findAll();
+        List<Book> books = repo.findAll("Book Two");
         return books;
     }
 
