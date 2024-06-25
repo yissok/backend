@@ -13,6 +13,7 @@
     </envs>
     <option name="MAIN_CLASS_NAME" value="com.example.demo.DemoApplication" />
     <module name="demo.main" />
+    <option name="VM_PARAMETERS" value="-Dspring.profiles.active=dev" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.example.demo.*" />

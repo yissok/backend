@@ -15,6 +15,8 @@ services:
     env_file: [mongo/.env-mongo]
     ports:
       - '27017:27017'
+    volumes:
+      - ./mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 #    volumes:
 #      - ./mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 #  mysql:

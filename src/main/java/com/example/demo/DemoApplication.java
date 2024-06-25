@@ -36,8 +36,7 @@ public class DemoApplication {
 
 	private boolean checkMongoDbConnection() {
 		try {
-			// Use MongoTemplate or perform any MongoDB-related operation to check the connection
-			String a = mongoTemplate.getDb().getName();
+			mongoTemplate.getCollection("books");
 			Query query = new Query().limit(1);
 			Book b = mongoTemplate.findOne(query, Book.class);
 			return true;

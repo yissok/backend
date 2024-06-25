@@ -6,7 +6,7 @@
 
 
 docker-compose up --build -d --remove-orphans --force-recreate
-sleep 1
+sleep 3
 docker exec -it my_mongodb mongo --username mongouser --password mongor00t \
 --eval "db = db.getSiblingDB('test_db'); \
 db.books.insertMany([ \
