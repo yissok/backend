@@ -2,7 +2,8 @@
   <configuration default="false" name="DemoApplication" type="Application" factoryName="Application" nameIsGenerated="true">
     <envs>
       <env name="AWS_ACCESS_KEY" value="test_access_key" />
-      <env name="S3_TREES_ENDPOINT" value="s3://123412341234-encrypted-note-trees/user-1/1-chg-log.txt" />
+      <env name="S3_TREES_ENDPOINT" value="http://127.0.0.1:4566" />
+<!--      /user-1/1-chg-log.txt-->
       <env name="AWS_SECRET_KEY" value="test_secret_key" />
       <env name="MONGODB_HOST" value="127.0.0.1:27017" />
       <env name="MONGODB_PASSWORD" value="mongor00t" />

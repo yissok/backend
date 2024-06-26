@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.example.demo.repository.BookRepository;
 import com.example.demo.model.Book;
+import com.example.demo.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +15,8 @@ import java.util.Optional;
 public class BookController {
     @Autowired
     private BookRepository repo;
+    @Autowired
+    private S3Service s3;
 
     @PostMapping("/add")
     public String saveBook(@RequestBody Book book){
@@ -23,6 +27,12 @@ public class BookController {
     @GetMapping("/all")
     public List<Book> getBooks(){
         List<Book> books = repo.findAll("Book Two");
+        return books;
+    }
+
+    @GetMapping("/s3")
+    public List<S3ObjectSummary> getS3Books(){
+        List<S3ObjectSummary> books = s3.listObjects();
         return books;
     }
 

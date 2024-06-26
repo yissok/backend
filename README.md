@@ -13,6 +13,13 @@
 - when you fix something while ssh'd and want to let it run after you close the session
   - npm install -g forever && forever start server.js
 
+aws --endpoint-url=http://localhost:4566 s3 mb s3://my-test-bucket
+aws --endpoint-url="http://localhost:4566" s3 ls
+`aws --endpoint-url="http://localhost:4566" s3 sync "src/test/java/com/example/demo/unit" s3://123412341234-encrypted-note-trees`
+aws --endpoint-url="http://localhost:4566" s3 ls s3://my-test-bucket
+
+curl http://localhost:8080/books/s3
+
 # TODO
 
 NEXT EPISODE:

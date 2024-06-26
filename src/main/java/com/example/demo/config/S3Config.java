@@ -7,6 +7,7 @@ import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
+@Data
 public class S3Config {
 
     @Value("${cloud.aws.region.static}")
@@ -28,9 +30,10 @@ public class S3Config {
     @Value("${cloud.aws.s3.endpoint}")
     private String s3Endpoint;
 
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketName;
+
     @Bean
-    @Primary
-    @Profile("local")
     public AmazonS3 amazonS3() {
         return AmazonS3ClientBuilder.standard()
                 .withEndpointConfiguration(new EndpointConfiguration(s3Endpoint, region))
