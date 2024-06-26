@@ -30,12 +30,6 @@ public class BookController {
         return books;
     }
 
-    @GetMapping("/s3")
-    public List<S3ObjectSummary> getS3Books(){
-        List<S3ObjectSummary> books = s3.listObjects();
-        return books;
-    }
-
     @GetMapping("/get/{id}")
     public Optional<Book> getBook(@PathVariable String id){
         return repo.findById(id);

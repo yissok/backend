@@ -5,9 +5,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.services.s3.model.S3Object;
 import com.example.demo.config.S3Config;
-import com.example.demo.model.Book;
 import com.example.demo.model.FileInfo;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,28 +28,29 @@ public class S3Service {
         this.awsS3Config = awsS3Config;
     }
 
-    public FileInfo uploadObjectToS3(String fileName, byte[] fileData) {
-        log.info("Uploading file '{}' to bucket: '{}' ", fileName, awsS3Config.getBucketName());
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(fileData);
+    public FileInfo uploadStringToS3(String bucket, String path, String fileNameAndExtension, String str) {
+        log.info("Uploading file '{}' to bucket: '{}' ", fileNameAndExtension, bucket);
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(str.getBytes());
         ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentLength(fileData.length);
+        objectMetadata.setContentLength(str.length());
+        String pathAndFile = path + "/" + fileNameAndExtension;
         String fileUrl =
-                awsS3Config.getS3Endpoint() + "/" + awsS3Config.getBucketName() + "/" + fileName;
+                awsS3Config.getS3Endpoint() + "/" + bucket + "/" + pathAndFile;
         PutObjectResult putObjectResult =
                 amazonS3.putObject(
-                        awsS3Config.getBucketName(), fileName, byteArrayInputStream, objectMetadata);
-        return new FileInfo(fileName, fileUrl, Objects.nonNull(putObjectResult));
+                        bucket, pathAndFile, byteArrayInputStream, objectMetadata);
+        return new FileInfo(pathAndFile, fileUrl, Objects.nonNull(putObjectResult));
     }
 
-    public S3ObjectInputStream downloadFileFromS3Bucket(final String fileName) {
-        log.info("Downloading file '{}' from bucket: '{}' ", fileName, awsS3Config.getBucketName());
-        final S3Object s3Object = amazonS3.getObject(awsS3Config.getBucketName(), fileName);
+    public S3ObjectInputStream downloadFileFromS3Bucket(final String fileName, String bucket) {
+        log.info("Downloading file '{}' from bucket: '{}' ", fileName, bucket);
+        final S3Object s3Object = amazonS3.getObject(bucket, fileName);
         return s3Object.getObjectContent();
     }
 
-    public List<S3ObjectSummary> listObjects() {
-        log.info("Retrieving object summaries for bucket '{}'", awsS3Config.getBucketName());
-        ObjectListing objectListing = amazonS3.listObjects(awsS3Config.getBucketName());
+    public List<S3ObjectSummary> listObjects(String bucket) {
+        log.info("Retrieving object summaries for bucket '{}'", bucket);
+        ObjectListing objectListing = amazonS3.listObjects(bucket);
         return objectListing.getObjectSummaries();
     }
 }

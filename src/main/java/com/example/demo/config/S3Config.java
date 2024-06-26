@@ -30,9 +30,6 @@ public class S3Config {
     @Value("${cloud.aws.s3.endpoint}")
     private String s3Endpoint;
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucketName;
-
     @Bean
     public AmazonS3 amazonS3() {
         return AmazonS3ClientBuilder.standard()
