@@ -120,8 +120,6 @@ public class Filesystem {
                 TagFolder removee = filesystem.getTagFolders().remove(elRm);
                 removee.getParent().getChildren().remove(elRm);
                 removeChildrenTagsAndNotes(removee, filesystem);
-            } else {
-                System.out.println("I am not removing this -> " + el);
             }
         }
     }
