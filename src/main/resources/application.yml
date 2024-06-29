@@ -1,26 +1,25 @@
 spring:
-  cloud:
-    aws:
-      region:
-        static: us-east-1
-      credentials:
-        access-key: ${AWS_ACCESS_KEY}
-        secret-key: ${AWS_SECRET_KEY}
-      s3:
-        endpoint: ${AWS_S3_ENDPOINT}
-        bucket: ${DB_BUCKET_NAME}
-  data:
-    mongodb:
-      uri: mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_COLLECTION}${MONGODB_QUERYPARAMS}
   output.ansi.enabled: ALWAYS
+
+data:
+  mongodb:
+    uri: mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_DB}${MONGODB_QUERYPARAMS}
+
+cloud:
+  aws:
+    region:
+      static: us-east-1
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    s3:
+      endpoint: ${S3_TREES_ENDPOINT}
+      bucket: ${S3_TREES_BUCKET_NAME}
+
 ---
 spring:
   config.activate.on-profile: dev
-  cloud:
-    aws:
-      credentials:
-        access-key: test
-        secret-key: test
-      s3:
-        endpoint: http://localhost:4566
-        bucket: my-bucket
+
+  data:
+    mongodb:
+      uri: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_DB}${MONGODB_QUERYPARAMS}

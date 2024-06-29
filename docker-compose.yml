@@ -1,20 +1,22 @@
 services:
-#  localstack:
-#    image: localstack/localstack
-#    ports:
-#      - "4566:4566"  # Edge port for all services
-#      - "4572:4572"  # S3 service port
-#    environment:
-#      - SERVICES=s3
-#      - DEBUG=1
-#    volumes:
-#      - "./localstack:/var/lib/localstack"
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "4566:4566"  # Edge port for all services
+      - "4572:4572"  # S3 service port
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+    volumes:
+      - "./localstack:/var/lib/localstack"
   my_mongodb:
     image: mongo:4.4.6
     container_name: "my_mongodb"
     env_file: [mongo/.env-mongo]
     ports:
       - '27017:27017'
+    volumes:
+      - ./mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 #    volumes:
 #      - ./mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 #  mysql:

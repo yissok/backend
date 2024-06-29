@@ -6,12 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
 //@EnableMongoRepositories(basePackages = "com.example.demo.repository")
 public class DemoApplication {
 
@@ -30,20 +31,18 @@ public class DemoApplication {
 			System.out.println("Successfully connected to MongoDB");
 		} else {
 			System.err.println("Failed to connect to MongoDB");
-			// You might choose to throw an exception or take other actions if the connection fails.
 		}
 	}
 
 	private boolean checkMongoDbConnection() {
 		try {
-			// Use MongoTemplate or perform any MongoDB-related operation to check the connection
-			String a = mongoTemplate.getDb().getName();
+			mongoTemplate.getCollection("books");
 			Query query = new Query().limit(1);
-			Book b = mongoTemplate.findOne(query, Book.class);
+			mongoTemplate.findOne(query, Book.class);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return false;
+			throw new RuntimeException(e.getMessage());
 		}
 	}
 }

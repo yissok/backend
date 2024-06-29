@@ -13,6 +13,13 @@
 - when you fix something while ssh'd and want to let it run after you close the session
   - npm install -g forever && forever start server.js
 
+aws --endpoint-url=http://localhost:4566 s3 mb s3://my-test-bucket
+aws --endpoint-url="http://localhost:4566" s3 ls
+`aws --endpoint-url="http://localhost:4566" s3 sync "src/test/java/com/example/demo/unit" s3://123412341234-encrypted-note-trees`
+aws --endpoint-url="http://localhost:4566" s3 ls s3://my-test-bucket
+
+curl http://localhost:8080/books/s3
+
 # TODO
 
 NEXT EPISODE:
@@ -20,9 +27,10 @@ NEXT EPISODE:
 - moved todos to https://github.com/yissok/node-bastion
 
 WE ARE BACK
-- get test working localstack s3 passing env variables
+- get integration test working localstack s3 passing env variables
 - get the same thing to work in live api gateway
   - retrieve all ssm parameters maybe within app or find way to extract them from ssm within cloudformation
+- 
 
 ---
 

@@ -6,13 +6,15 @@
 
 
 docker-compose up --build -d --remove-orphans --force-recreate
-sleep 1
+sleep 3
 docker exec -it my_mongodb mongo --username mongouser --password mongor00t \
 --eval "db = db.getSiblingDB('test_db'); \
 db.books.insertMany([ \
     {title: 'Book One', author: 'Author One'}, \
     {title: 'Book Two', author: 'Author Two'} \
 ]);"
+aws --endpoint-url=http://localhost:4566 s3 mb s3://123412341234-encrypted-note-trees
+aws --endpoint-url="http://localhost:4566" s3 sync "src/test/java/com/example/demo/unit" s3://123412341234-encrypted-note-trees
 
 #docker container run -d --name my_cli_mongo \
 #-p 27017:27017 \

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-class FilesystemTest {
+class FilesystemTest implements BaseTest {
     String serialisedTreeFile = "ROOT-Nintendo-Smash-_-Zelda-Link-Sword:iamasword-_-_-_-_-";
 
     @Test
@@ -62,10 +62,4 @@ class FilesystemTest {
     @Test
     void testInputChangeSetsOutputCompressedTree() {}
 
-    @AfterAll
-    @BeforeAll
-    static void padLogs() {
-
-        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n");
-    }
 }
