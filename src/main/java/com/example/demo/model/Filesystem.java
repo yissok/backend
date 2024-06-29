@@ -44,11 +44,13 @@ public class Filesystem {
                                     .append(SERIAL_SEPARATOR));
         // add folders
         HashMap<String, TagFolder> folders = tf.getChildren();
-        if (folders != null)
-            folders.forEach(
-                    (name, folder) -> {
-                        serialiseTreeRec(filesystem, folder, serialised, name);
-                    });
+        if (folders != null) {
+            SortedSet<String> sortedFolderNames = new TreeSet<>(folders.keySet());
+            for (String folderName : sortedFolderNames) {
+                TagFolder folder = folders.get(folderName);
+                serialiseTreeRec(filesystem, folder, serialised, folderName);
+            }
+        }
         serialised.append(SERIAL_BACKWARDS).append(SERIAL_SEPARATOR);
         return serialised;
     }
