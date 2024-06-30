@@ -51,7 +51,8 @@ public class Filesystem {
                 serialiseTreeRec(filesystem, folder, serialised, folderName);
             }
         }
-        serialised.append(SERIAL_BACKWARDS).append(SERIAL_SEPARATOR);
+        if (folderLevel!=LB_ROOT)
+            serialised.append(SERIAL_BACKWARDS).append(SERIAL_SEPARATOR);
         return serialised;
     }
 

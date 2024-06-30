@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 class FilesystemTest implements BaseTest {
-    String serialisedTreeFile = "ROOT-Nintendo-Smash-_-Zelda-Link-Sword:iamasword-_-_-_-_-";
+    String serialisedTreeFile = "ROOT-Nintendo-Smash-_-Zelda-Link-Sword:iamasword-_-_-_-";
 
     @Test
     void testSerialisation() throws IOException {
@@ -29,7 +29,7 @@ class FilesystemTest implements BaseTest {
         Filesystem filesystem2 = Filesystem.createTree(serialisedAddition, filesystem);
         String generatedSerialisedTree = Filesystem.serialiseTree(filesystem2);
         assertEquals(
-                "ROOT-Nintendo-Smash-_-Zelda-Link-Sword:iamasword-_-Wolf-Shield:iamashield-_-_-_-Playstation-_-Xbox-_-_-",
+                "ROOT-Nintendo-Smash-_-Zelda-Link-Sword:iamasword-_-Wolf-Shield:iamashield-_-_-_-Playstation-_-Xbox-_-",
                 generatedSerialisedTree);
     }
 
@@ -42,7 +42,7 @@ class FilesystemTest implements BaseTest {
         Filesystem filesystem2 = Filesystem.createTree(serialisedAddition, filesystem);
         Filesystem filesystem3 = Filesystem.createTree(serialisedDeletion, filesystem2);
         String generatedSerialisedTree = Filesystem.serialiseTree(filesystem3);
-        assertEquals("ROOT-Nintendo-Smash-_-_-Playstation-_-_-", generatedSerialisedTree);
+        assertEquals("ROOT-Nintendo-Smash-_-_-Playstation-_-", generatedSerialisedTree);
     }
 
     String serialisedDeletionAndAddition =
@@ -50,7 +50,7 @@ class FilesystemTest implements BaseTest {
     //    here ___|               here ___|                                          here ___|
 
     String serialisedDeletionAndAdditionResult =
-            "ROOT-Apple-iphone-11-_-12-_-13-_-14-_-15-_-6-_-7-_-8-_-X-_-_-_-Nvidia-_-_-";
+            "ROOT-Apple-iphone-11-_-12-_-13-_-14-_-15-_-6-_-7-_-8-_-X-_-_-_-Nvidia-_-";
 
     @Test
     void testSerialisedStringWhereRemovalOccursWithinString() {
